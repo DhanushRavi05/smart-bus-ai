@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tamil Nadu SmartBus AI Enterprise Portal — Command Center</title>
+
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Leaflet CSS for Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <!-- Custom Design System -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div id="app-root">
+  <!-- 1. LEFT VERTICAL NAVIGATION SIDEBAR (280px) -->
+  <aside class="left-sidebar">
+    <div class="sidebar-header">
+      <div class="logo-badge">
+        <i class="fa-solid fa-bus-simple"></i>
+      </div>
+      <div class="logo-text">
+        <h1>TN SMARTBUS AI</h1>
+        <span>COMMAND PORTAL</span>
+      </div>
+    </div>
+
+    <!-- Navigation Menu Items -->
+    <nav class="nav-menu">
+      <a class="nav-item active" data-view="view-dashboard">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>AI Dashboard</span>
+      </a>
+      <a class="nav-item" data-view="view-map">
+        <i class="fa-solid fa-earth-asia"></i>
+        <span>Live Satellite Map</span>
+        <span class="badge-tag">LIVE</span>
+      </a>
+      <a class="nav-item" data-view="view-camera-hud">
+        <i class="fa-solid fa-video"></i>
+        <span>Multi-Cam AI HUD</span>
+      </a>
+      <a class="nav-item" data-view="view-biometrics">
+        <i class="fa-solid fa-id-card-clip"></i>
+        <span>AI Face Recognition</span>
+      </a>
+      <a class="nav-item" data-view="view-buses">
+        <i class="fa-solid fa-bus"></i>
+        <span>TN Fleet Manager</span>
+      </a>
+      <a class="nav-item" data-view="view-routes">
+        <i class="fa-solid fa-route"></i>
+        <span>Route Explorer</span>
+      </a>
+      <a class="nav-item" data-view="view-security">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Cyber Security & Logs</span>
+      </a>
+      <a class="nav-item" data-view="view-verify">
+        <i class="fa-solid fa-ticket"></i>
+        <span>Ticket Audit Scanner</span>
+      </a>
+      <a class="nav-item" data-view="view-reports">
+        <i class="fa-solid fa-file-csv"></i>
+        <span>Analytics & CSV Report</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-profile-card">
+        <div class="avatar-box" id="user-avatar-initials">TN</div>
+        <div class="user-info">
+          <h4 id="user-display-name">Transport Director</h4>
+          <p id="user-display-email">director@tnstc.gov.in</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 2. MAIN CONTENT AREA (EDGE-TO-EDGE FULL SCREEN) -->
+  <main class="main-wrapper">
+    <!-- Top Header Bar -->
+    <header class="top-header">
+      <div class="page-title">
+        <h2 id="header-view-title">AI Fleet Command Dashboard</h2>
+        <p>Tamil Nadu Public Transport Corporations (MTC, TNSTC, SETC)</p>
+      </div>
+
+      <div class="header-actions">
+        <div class="cyber-pill">
+          <span class="pulse-dot"></span>
+          <span id="system-status-text">AES-256 ENCRYPTED GATEWAY</span>
+        </div>
+
+        <button class="btn-cyber" id="btn-register-bus">
+          <i class="fa-solid fa-plus"></i> Register New Bus
+        </button>
+
+        <button class="btn-cyber" style="background: rgba(59,130,246,0.2); border: 1px solid var(--accent-blue);" id="btn-login-modal">
+          <i class="fa-solid fa-right-to-bracket"></i> Login / Role
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Sections Container -->
+    <div class="content-area">
+
+      <!-- VIEW 1: AI COMMAND DASHBOARD -->
+      <section id="view-dashboard" class="view-section active">
+        <div class="metrics-grid">
+          <div class="glass-card">
+            <div class="metric-header">
+              <span>ACTIVE TN FLEET</span>
+              <div class="metric-icon"><i class="fa-solid fa-bus"></i></div>
+            </div>
+            <div class="metric-val" id="metric-active-buses">--</div>
+            <small style="color: var(--accent-green);">100% Tracking Active</small>
+          </div>
+
+          <div class="glass-card">
+            <div class="metric-header">
+              <span>LIVE COMMUTERS</span>
+              <div class="metric-icon" style="color: var(--accent-blue);"><i class="fa-solid fa-users"></i></div>
+            </div>
+            <div class="metric-val" id="metric-passengers">--</div>
+            <small style="color: var(--accent-blue);">AI Headcount Sensors</small>
+          </div>
+
+          <div class="glass-card">
+            <div class="metric-header">
+              <span>OVERLOADED BUSES</span>
+              <div class="metric-icon" style="color: var(--accent-amber);"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            </div>
+            <div class="metric-val" id="metric-overload-count" style="color: var(--accent-amber);">--</div>
+            <small style="color: var(--accent-amber);">Capacity Limit Exceeded</small>
+          </div>
+
+          <div class="glass-card">
+            <div class="metric-header">
+              <span>BIOMETRIC DUTY PASS</span>
+              <div class="metric-icon" style="color: var(--accent-cyan);"><i class="fa-solid fa-face-smile"></i></div>
+            </div>
+            <div class="metric-val" style="color: var(--accent-cyan);">99.4%</div>
+            <small style="color: var(--accent-cyan);">Driver AI Duty Scan</small>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h3 style="margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+            <span><i class="fa-solid fa-map-location-dot" style="color: var(--accent-green); margin-right: 8px;"></i> Live Tamil Nadu Fleet Movements</span>
+            <button class="btn-cyber" id="btn-toggle-satellite-dashboard" style="font-size: 0.78rem; padding: 6px 14px;">
+              <i class="fa-solid fa-satellite"></i> Satellite Mode
+            </button>
+          </h3>
+          <div id="dashboard-map" style="height: 480px; border-radius: 12px; overflow: hidden;"></div>
+        </div>
+      </section>
+
+      <!-- VIEW 2: LIVE SATELLITE GPS MAP VIEW -->
+      <section id="view-map" class="view-section">
+        <div class="glass-card" style="margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <h3>Tamil Nadu Regional Earth Satellite GPS Navigation</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">High-resolution satellite view across all 38 districts with live vehicle marker telemetry.</p>
+          </div>
+          <button class="btn-cyber" id="btn-toggle-satellite-full">
+            <i class="fa-solid fa-earth-asia"></i> Toggle Earth Satellite
+          </button>
+        </div>
+        <div id="map-container"></div>
+      </section>
+
+      <!-- VIEW 3: MULTI-CAMERA AI HUD -->
+      <section id="view-camera-hud" class="view-section">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="glass-card">
+            <h4><i class="fa-solid fa-eye" style="color: var(--accent-green);"></i> Driver AI Fatigue & Sobriety Camera (TN-01-N-9842)</h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Real-time facial monitoring & eye-blink detection for Ramasamy M.</p>
+            <div style="background: #000; border-radius: 12px; height: 320px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border: 1px solid var(--accent-green);">
+              <img src="/images/driver_ramasamy.jpg" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.85;" alt="Driver Cam">
+              <div class="scanline"></div>
+              <div style="position: absolute; bottom: 12px; left: 12px; background: rgba(0,0,0,0.8); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; border-left: 3px solid var(--accent-green);">
+                AI Alertness: 98% (OPTIMAL) | Sobriety: PASSED
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <h4><i class="fa-solid fa-users-viewfinder" style="color: var(--accent-blue);"></i> AI Passenger Overload Sensor Camera (TN-01-N-5700)</h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Computer vision passenger density & headcount scanner.</p>
+            <div style="background: #000; border-radius: 12px; height: 320px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border: 1px solid var(--accent-amber);">
+              <img src="/images/mtc_bus.jpg" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.85;" alt="Passenger Cam">
+              <div style="position: absolute; top: 12px; right: 12px; background: var(--accent-red); padding: 4px 10px; border-radius: 4px; font-weight: 700; font-size: 0.75rem;">
+                OVERLOADED (58/55)
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 4: AI FACE RECOGNITION BIOMETRIC PORTAL -->
+      <section id="view-biometrics" class="view-section">
+        <div class="glass-card" style="margin-bottom: 20px;">
+          <h3><i class="fa-solid fa-face-viewfinder" style="color: var(--accent-green);"></i> AI Driver & Conductor Biometric Verification Module</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">68-Point Facial Landmark Mesh Scan to verify identity, sobriety, and issue digital duty permits before vehicle startup.</p>
+        </div>
+
+        <div class="biometric-wrapper">
+          <div class="glass-card">
+            <h4 style="margin-bottom: 12px;">Live Biometric Facial Mesh Scanner</h4>
+            <div class="canvas-box">
+              <canvas id="face-canvas"></canvas>
+              <div class="scanline"></div>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 16px;">
+              <button class="btn-cyber" style="flex: 1;" id="btn-scan-driver">
+                <i class="fa-solid fa-user-check"></i> Scan Driver (Ramasamy)
+              </button>
+              <button class="btn-cyber" style="flex: 1; background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);" id="btn-scan-conductor">
+                <i class="fa-solid fa-id-card"></i> Scan Conductor (Karthik)
+              </button>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <h4 style="margin-bottom: 16px;">Verified Employee Duty Authorization</h4>
+            <div id="biometric-result-card" style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
+              <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
+                <img id="bio-result-img" src="/images/driver_ramasamy.jpg" style="width: 70px; height: 70px; border-radius: 12px; object-fit: cover; border: 2px solid var(--accent-green);" alt="Verified Profile">
+                <div>
+                  <h3 id="bio-result-name" style="color: #fff; font-size: 1.1rem;">Ramasamy M.</h3>
+                  <p id="bio-result-role" style="font-size: 0.85rem; color: var(--accent-green); font-weight: 600;">Senior Bus Driver (TN-DRV-84920)</p>
+                  <p id="bio-result-division" style="font-size: 0.78rem; color: var(--text-muted);">MTC Chennai Central Division</p>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px;">
+                  <span style="font-size: 0.75rem; color: var(--text-dim);">FACIAL MATCH</span>
+                  <p id="bio-result-score" style="font-size: 1rem; font-weight: 700; color: var(--accent-green);">99.4%</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px;">
+                  <span style="font-size: 0.75rem; color: var(--text-dim);">ALCOHOL SOBRIETY</span>
+                  <p id="bio-result-sobriety" style="font-size: 0.85rem; font-weight: 700; color: var(--accent-green);">0.00% PASSED</p>
+                </div>
+              </div>
+
+              <div style="background: rgba(16,185,129,0.1); border: 1px dashed var(--accent-green); padding: 12px; border-radius: 8px; font-size: 0.8rem; color: var(--accent-green); text-align: center;">
+                <i class="fa-solid fa-circle-check"></i> DIGITAL DUTY DISPATCH PERMIT GENERATED<br>
+                <span id="bio-result-permit" style="font-family: monospace; font-weight: 700;">PERMIT-TN-2026-88910</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 5: TN FLEET MANAGER -->
+      <section id="view-buses" class="view-section">
+        <div class="glass-card">
+          <h3 style="margin-bottom: 16px;">Active Tamil Nadu Fleet Registry</h3>
+          <div class="audit-table-wrapper">
+            <table class="cyber-table">
+              <thead>
+                <tr>
+                  <th>Bus Reg Number</th>
+                  <th>Transport Division</th>
+                  <th>Assigned Route</th>
+                  <th>Driver & Conductor</th>
+                  <th>Passengers</th>
+                  <th>Biometrics</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="fleet-table-body">
+                <!-- Dynamically populated via app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 6: ROUTE EXPLORER -->
+      <section id="view-routes" class="view-section">
+        <div class="glass-card">
+          <h3 style="margin-bottom: 16px;">Tamil Nadu Transport Network Routes</h3>
+          <div class="audit-table-wrapper">
+            <table class="cyber-table">
+              <thead>
+                <tr>
+                  <th>Route Code</th>
+                  <th>Division & District</th>
+                  <th>Origin Stop</th>
+                  <th>Destination Stop</th>
+                  <th>Distance</th>
+                  <th>Est. Time</th>
+                </tr>
+              </thead>
+              <tbody id="routes-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 7: CYBERSECURITY & AUDIT LOGS -->
+      <section id="view-security" class="view-section">
+        <div class="glass-card">
+          <h3 style="margin-bottom: 16px;"><i class="fa-solid fa-shield-halved" style="color: var(--accent-green);"></i> Data Protection & Encryption Security Logs</h3>
+          <div class="audit-table-wrapper">
+            <table class="cyber-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Security Event Description</th>
+                  <th>System Actor</th>
+                  <th>SHA-256 Hash</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="security-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 8: TICKET AUDIT SCANNER -->
+      <section id="view-verify" class="view-section">
+        <div class="glass-card">
+          <h3>Conductor Ticketing vs Headcount Audit Scanner</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Compares automated passenger counter sensors against tickets issued by ticket machine.</p>
+          <div id="alerts-container">
+            <!-- Dynamically rendered alerts -->
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 9: ANALYTICS & CSV REPORTS -->
+      <section id="view-reports" class="view-section">
+        <div class="glass-card" style="text-align: center; padding: 40px;">
+          <i class="fa-solid fa-file-csv" style="font-size: 3rem; color: var(--accent-green); margin-bottom: 16px;"></i>
+          <h2>Download Tamil Nadu Fleet Analytics Report</h2>
+          <p style="color: var(--text-muted); max-width: 500px; margin: 12px auto 24px;">Export comprehensive CSV telemetry reports containing live vehicle positions, passenger load statistics, driver assignments, and overload alerts.</p>
+          <a href="/api/reports/export-csv" class="btn-cyber" style="display: inline-flex; text-decoration: none;">
+            <i class="fa-solid fa-download"></i> Export Official CSV Report
+          </a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- MODAL 1: AUTHENTICATION LOGIN MODAL -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal-card">
+    <h3 style="margin-bottom: 8px; color: #fff;">User Authentication Portal</h3>
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">Select role or enter credentials to sign into Tamil Nadu Transport Portal.</p>
+    
+    <form id="auth-form">
+      <div class="form-group">
+        <label>Select Authority Role</label>
+        <select class="form-control" id="auth-role-select">
+          <option value="admin">Transport Director / Admin</option>
+          <option value="driver">MTC/TNSTC Bus Driver</option>
+          <option value="conductor">Ticket Conductor</option>
+          <option value="passenger">Public Passenger</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Official Email Address</label>
+        <input type="email" class="form-control" id="auth-email" value="director@tnstc.gov.in" required>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" id="auth-password" value="admin123" required>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 24px;">
+        <button type="button" class="btn-cyber" style="background: transparent; border: 1px solid var(--border-color); flex: 1;" id="btn-close-auth">Cancel</button>
+        <button type="submit" class="btn-cyber" style="flex: 1;">Authenticate</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL 2: REGISTER NEW BUS MODAL -->
+<div class="modal-overlay" id="register-bus-modal">
+  <div class="modal-card">
+    <h3 style="margin-bottom: 8px; color: #fff;">Register New Fleet Vehicle</h3>
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">Add a new bus to the Tamil Nadu Transport tracking system.</p>
+    
+    <form id="register-bus-form">
+      <div class="form-group">
+        <label>Bus Registration Number (e.g. TN-01-N-9988)</label>
+        <input type="text" class="form-control" id="reg-bus-number" placeholder="TN-01-N-9988" required>
+      </div>
+
+      <div class="form-group">
+        <label>Transport Division</label>
+        <select class="form-control" id="reg-division">
+          <option value="MTC Chennai">MTC Chennai</option>
+          <option value="TNSTC Coimbatore">TNSTC Coimbatore</option>
+          <option value="TNSTC Madurai">TNSTC Madurai</option>
+          <option value="TNSTC Salem">TNSTC Salem</option>
+          <option value="SETC Express">SETC Express</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Assign Route</label>
+        <select class="form-control" id="reg-route-id">
+          <option value="route_MTC_21G">MTC 21G Express (Broadway - Vandalur)</option>
+          <option value="route_MTC_570">MTC 570 OMR AC (Koyambedu - Siruseri)</option>
+          <option value="route_TNSTC_CBE_45B">TNSTC 45B (Gandhipuram - Ukkadam)</option>
+          <option value="route_SETC_CHE_MDU">SETC 826 (Chennai - Madurai)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Driver Name</label>
+        <input type="text" class="form-control" id="reg-driver-name" value="Ramasamy M." required>
+      </div>
+
+      <div class="form-group">
+        <label>Conductor Name</label>
+        <input type="text" class="form-control" id="reg-conductor-name" value="Karthik N." required>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 24px;">
+        <button type="button" class="btn-cyber" style="background: transparent; border: 1px solid var(--border-color); flex: 1;" id="btn-close-register">Cancel</button>
+        <button type="submit" class="btn-cyber" style="flex: 1;">Save Vehicle</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Socket.IO & Leaflet Scripts -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- App & Map Modules -->
+<script src="/js/map.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
