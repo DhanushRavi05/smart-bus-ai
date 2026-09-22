@@ -11,10 +11,12 @@
 
   <style>
     /* ================================================================
-       3D CINEMATIC SPLASH INTRO SCREEN
+       TNSTC BUS GRAND ENTRANCE ANIMATION — SPLASH SCREEN
+       Buses drive in from both sides → WELCOME title bursts → Enter
        ================================================================ */
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
+    /* ── SPLASH ROOT ─────────────────────────────── */
     #splash-screen {
       position: fixed;
       top: 0; left: 0;
@@ -496,82 +498,117 @@
 <body>
 
 <!-- ===============================================
-     3D CINEMATIC SPLASH INTRO SCREEN
+     TNSTC BUS GRAND ENTRANCE SPLASH ANIMATION
      =============================================== -->
 <div id="splash-screen">
-  <!-- Background Effects -->
-  <div class="scanner-h"></div>
-  <div class="grid-floor"><div class="grid-plane"></div></div>
+
+  <!-- Corner brackets -->
+  <div class="corner-tl"></div>
+  <div class="corner-tr"></div>
+  <div class="corner-bl"></div>
+  <div class="corner-br"></div>
+
+  <!-- Background layers -->
   <div class="particles-container" id="particles-box"></div>
-
-  <!-- Data Stream Columns -->
   <div id="data-streams-box"></div>
+  <div class="grid-floor"><div class="grid-plane"></div></div>
+  <div class="road-layer">
+    <div class="road-surface"></div>
+  </div>
 
-  <!-- 3D WIREFRAME BUS -->
-  <div class="bus-3d-scene">
-    <div class="bus-3d-wrapper">
-      <div class="bus-body">
-        <!-- Front -->
-        <div class="bus-face bus-front">
-          <div class="bus-headlight left"></div>
-          <div class="bus-headlight right"></div>
-          <div class="bus-route-display">MTC 21G EXPRESS</div>
-        </div>
-        <!-- Back -->
-        <div class="bus-face bus-back"></div>
-        <!-- Left Side -->
-        <div class="bus-face bus-side bus-side-left">
-          <div class="bus-windows">
-            <div class="bus-window"></div>
-            <div class="bus-window"></div>
-            <div class="bus-window"></div>
-            <div class="bus-window"></div>
-            <div class="bus-window"></div>
-            <div class="bus-window"></div>
-            <div class="bus-window"></div>
-          </div>
-          <div class="bus-wheel" style="left: 40px;"></div>
-          <div class="bus-wheel" style="right: 40px;"></div>
-        </div>
-        <!-- Right Side -->
-        <div class="bus-face bus-side bus-side-right">
-          <div class="bus-windows">
-            <div class="bus-window"></div>
-            <div class="bus-window"></div>
-            <div class="bus-window"></div>
-            <div class="bus-window"></div>
-            <div class="bus-window"></div>
-            <div class="bus-window"></div>
-            <div class="bus-window"></div>
-          </div>
-          <div class="bus-wheel" style="left: 40px;"></div>
-          <div class="bus-wheel" style="right: 40px;"></div>
-        </div>
-        <!-- Top -->
-        <div class="bus-face bus-top"></div>
-        <!-- Bottom -->
-        <div class="bus-face bus-bottom"></div>
-      </div>
-      <div class="bus-shadow"></div>
+  <!-- Headlight beams on road -->
+  <div class="beam" id="beam-left"></div>
+  <div class="beam" id="beam-right"></div>
+
+  <!-- ─── BUS 1 : enters from LEFT ─────────────── -->
+  <div class="tn-bus" id="bus-left">
+    <div class="b-back"><div class="b-tail"></div></div>
+    <div class="b-body">
+      <div class="b-upper"></div>
+      <div class="b-wave"></div>
+      <div class="b-lower"></div>
+      <div class="b-stripe"></div>
+    </div>
+    <div class="b-led">TAMIL NADU</div>
+    <div class="b-windows">
+      <div class="b-win"></div><div class="b-win"></div>
+      <div class="b-win"></div><div class="b-win"></div>
+      <div class="b-win"></div><div class="b-win"></div>
+      <div class="b-win"></div>
+    </div>
+    <div class="b-text">TAMIL NADU GOVT TRANSPORT</div>
+    <div class="b-front">
+      <div class="b-front-headlight"></div>
+    </div>
+    <div class="b-wheels">
+      <div class="b-wheel"></div>
+      <div class="b-wheel"></div>
+    </div>
+    <div class="b-shadow"></div>
+  </div>
+
+  <!-- ─── BUS 2 : enters from RIGHT ────────────── -->
+  <div class="tn-bus" id="bus-right">
+    <div class="b-back"><div class="b-tail"></div></div>
+    <div class="b-body">
+      <div class="b-upper"></div>
+      <div class="b-wave"></div>
+      <div class="b-lower"></div>
+      <div class="b-stripe"></div>
+    </div>
+    <div class="b-led">TAMIL NADU</div>
+    <div class="b-windows">
+      <div class="b-win"></div><div class="b-win"></div>
+      <div class="b-win"></div><div class="b-win"></div>
+      <div class="b-win"></div><div class="b-win"></div>
+      <div class="b-win"></div>
+    </div>
+    <div class="b-text">TAMIL NADU GOVT TRANSPORT</div>
+    <div class="b-front">
+      <div class="b-front-headlight"></div>
+    </div>
+    <div class="b-wheels">
+      <div class="b-wheel"></div>
+      <div class="b-wheel"></div>
+    </div>
+    <div class="b-shadow"></div>
+  </div>
+
+  <!-- ─── BUS 3 : smaller, centre-background ───── -->
+  <div class="tn-bus" id="bus-center">
+    <div class="b-back"></div>
+    <div class="b-body">
+      <div class="b-upper"></div>
+      <div class="b-wave"></div>
+      <div class="b-lower"></div>
+      <div class="b-stripe"></div>
+    </div>
+    <div class="b-led">TAMIL NADU</div>
+    <div class="b-windows">
+      <div class="b-win"></div><div class="b-win"></div>
+      <div class="b-win"></div><div class="b-win"></div>
+    </div>
+    <div class="b-front">
+      <div class="b-front-headlight"></div>
+    </div>
+    <div class="b-wheels">
+      <div class="b-wheel"></div>
+      <div class="b-wheel"></div>
     </div>
   </div>
 
-  <!-- Branding -->
-  <div class="splash-branding">
-    <div class="splash-logo-row">
-      <div class="splash-logo-icon"><i class="fa-solid fa-bus-simple"></i></div>
-      <div class="splash-title">TN SMARTBUS AI</div>
-    </div>
-    <div class="splash-subtitle">ENTERPRISE COMMAND PORTAL</div>
-    <div class="splash-division-text">Tamil Nadu Transport Corporation — MTC · TNSTC · SETC</div>
-
-    <div class="init-status" id="init-status-lines"></div>
+  <!-- ─── CENTRE WELCOME TITLE ─────────────────── -->
+  <div class="splash-center">
+    <div class="welcome-small">🚌 GOVERNMENT OF TAMIL NADU</div>
+    <div class="welcome-big">WELCOME TO<br>TAMIL NADU<br>SMART BUS AI</div>
+    <div class="welcome-sub">MTC &nbsp;·&nbsp; TNSTC &nbsp;·&nbsp; SETC &nbsp;·&nbsp; Enterprise Command Portal</div>
 
     <button class="enter-btn" id="btn-enter-portal" onclick="dismissSplash()">
-      <i class="fa-solid fa-shield-halved"></i>
-      INITIALIZE SYSTEM
+      <i class="fa-solid fa-bus-simple"></i>
+      ENTER PORTAL
     </button>
   </div>
+
 </div>
 
 <!-- ===============================================
@@ -980,58 +1017,41 @@
 <!-- Splash Screen Logic -->
 <script>
 (function() {
-  // Generate particles
-  var particlesBox = document.getElementById('particles-box');
-  for (var i = 0; i < 50; i++) {
+  /* ── Floating particles (blue & green tones) ── */
+  var pBox = document.getElementById('particles-box');
+  var pColors = ['#10b981','#1565C0','#60a5fa','#34d399','#f59e0b'];
+  for (var i = 0; i < 60; i++) {
     var p = document.createElement('div');
     p.className = 'particle';
     p.style.left = Math.random() * 100 + '%';
-    p.style.animationDuration = (4 + Math.random() * 6) + 's';
-    p.style.animationDelay = (Math.random() * 5) + 's';
-    p.style.width = (2 + Math.random() * 3) + 'px';
-    p.style.height = p.style.width;
-    particlesBox.appendChild(p);
+    var dur = 5 + Math.random() * 7;
+    p.style.animationDuration = dur + 's';
+    p.style.animationDelay = (Math.random() * 6) + 's';
+    var sz = (2 + Math.random() * 4) + 'px';
+    p.style.width = sz; p.style.height = sz;
+    var col = pColors[Math.floor(Math.random() * pColors.length)];
+    p.style.background = col;
+    p.style.boxShadow = '0 0 6px ' + col;
+    pBox.appendChild(p);
   }
 
-  // Generate data stream columns
-  var streamsBox = document.getElementById('data-streams-box');
-  var chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ';
-  for (var s = 0; s < 12; s++) {
-    var stream = document.createElement('div');
-    stream.className = 'data-stream';
-    stream.style.left = (5 + s * 8.5) + '%';
-    var inner = document.createElement('div');
-    inner.className = 'data-stream-inner';
-    inner.style.animationDuration = (8 + Math.random() * 12) + 's';
-    inner.style.animationDelay = (Math.random() * 5) + 's';
-    var text = '';
-    for (var c = 0; c < 200; c++) {
-      text += chars[Math.floor(Math.random() * chars.length)] + '\n';
-    }
-    inner.textContent = text;
-    stream.appendChild(inner);
-    streamsBox.appendChild(stream);
+  /* ── Data stream columns (blue tone) ── */
+  var sBox = document.getElementById('data-streams-box');
+  var chars = '01அஆஇஈககடதநபமயரலவழTNSTCMTCSETC';
+  for (var s = 0; s < 14; s++) {
+    var st = document.createElement('div');
+    st.className = 'data-stream';
+    st.style.left = (3 + s * 7) + '%';
+    var inn = document.createElement('div');
+    inn.className = 'data-stream-inner';
+    inn.style.animationDuration = (9 + Math.random() * 10) + 's';
+    inn.style.animationDelay  = (Math.random() * 6) + 's';
+    var txt = '';
+    for (var c = 0; c < 180; c++) txt += chars[Math.floor(Math.random()*chars.length)] + '\n';
+    inn.textContent = txt;
+    st.appendChild(inn);
+    sBox.appendChild(st);
   }
-
-  // System initialization status lines
-  var lines = [
-    { text: '[✓] Secure Gateway Handshake — TLS 1.3 Established', delay: 500, type: 'check' },
-    { text: '[✓] Tamil Nadu Fleet Database Connected — 5 Active Buses', delay: 1200, type: 'check' },
-    { text: '[✓] AI Biometric Engine Online — 68-Point Landmark Mesh Ready', delay: 2000, type: 'check' },
-    { text: '[✓] GPS Satellite Telemetry Stream Active — 38 Districts', delay: 2800, type: 'check' },
-    { text: '[⚠] Alert: MTC 570 OMR Overloaded (58/55 Commuters)', delay: 3500, type: 'warn' },
-    { text: '[✓] SHA-256 Encryption Payload Verified — System Ready', delay: 4200, type: 'check' }
-  ];
-
-  var statusEl = document.getElementById('init-status-lines');
-  lines.forEach(function(line) {
-    setTimeout(function() {
-      var div = document.createElement('div');
-      div.className = 'init-line';
-      div.innerHTML = '<span class="' + line.type + '">' + line.text + '</span>';
-      statusEl.appendChild(div);
-    }, line.delay);
-  });
 })();
 
 function dismissSplash() {
