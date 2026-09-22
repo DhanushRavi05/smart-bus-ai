@@ -10,14 +10,121 @@
   <link rel="stylesheet" href="/css/style.css">
 
   <style>
-    /* ================================================================
-       TNSTC BUS GRAND ENTRANCE ANIMATION — SPLASH SCREEN
-       Buses drive in from both sides → WELCOME title bursts → Enter
-       ================================================================ */
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Outfit:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap');
 
-    /* ── SPLASH ROOT ─────────────────────────────── */
     #splash-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 99999;
+      background: #030608;
+      overflow: hidden;
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    #splash-screen.exit {
+      opacity: 0;
+      transform: scale(1.06);
+      pointer-events: none;
+    }
+    /* Full-screen canvas — draws everything */
+    #splash-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+    /* Overlay text on top of canvas */
+    #splash-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+    #splash-tagline {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 7px;
+      color: rgba(16,185,129,0);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      transition: color 0.8s ease;
+    }
+    #splash-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-align: center;
+      line-height: 1.25;
+      background: linear-gradient(90deg, #fff 0%, #1565C0 30%, #60a5fa 55%, #10b981 80%, #fff 100%);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0;
+      transform: scale(0.7) translateY(20px);
+      transition: opacity 0.7s cubic-bezier(0.34,1.56,0.64,1),
+                  transform 0.7s cubic-bezier(0.34,1.56,0.64,1);
+      animation: shimmerLoop 5s ease-in-out infinite 1s;
+    }
+    @keyframes shimmerLoop {
+      0%,100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
+    #splash-title.visible {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    #splash-sub {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      color: rgba(96,165,250,0);
+      letter-spacing: 3px;
+      margin-top: 10px;
+      transition: color 0.8s ease 0.3s;
+    }
+    #splash-enter {
+      pointer-events: auto;
+      margin-top: 36px;
+      padding: 14px 52px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(21,101,192,0.35), rgba(16,185,129,0.25));
+      border: 2px solid #1565C0;
+      border-radius: 8px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s ease, transform 0.6s ease,
+                  background 0.3s, box-shadow 0.3s;
+    }
+    #splash-enter.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    #splash-enter:hover {
+      background: linear-gradient(135deg, rgba(21,101,192,0.55), rgba(16,185,129,0.4));
+      box-shadow: 0 0 30px rgba(21,101,192,0.5), 0 0 14px rgba(16,185,129,0.3);
+    }
+    /* Corner brackets */
+    .c-tl,.c-tr,.c-bl,.c-br {
+      position: absolute; width: 38px; height: 38px;
+      opacity: 0.45; z-index: 11;
+    }
+    .c-tl { top:14px; left:14px;  border-top:2px solid #10b981; border-left:2px solid #10b981; }
+    .c-tr { top:14px; right:14px; border-top:2px solid #10b981; border-right:2px solid #10b981; }
+    .c-bl { bottom:14px; left:14px;  border-bottom:2px solid #10b981; border-left:2px solid #10b981; }
+    .c-br { bottom:14px; right:14px; border-bottom:2px solid #10b981; border-right:2px solid #10b981; }
+  </style>
+</head>
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
@@ -497,118 +604,28 @@
 </head>
 <body>
 
-<!-- ===============================================
-     TNSTC BUS GRAND ENTRANCE SPLASH ANIMATION
-     =============================================== -->
+<!-- ===================================================
+     CANVAS-BASED TNSTC BUS ENTRANCE SPLASH SCREEN
+     All bus shapes drawn on <canvas> — zero CSS bus divs
+     =================================================== -->
 <div id="splash-screen">
+  <canvas id="splash-canvas"></canvas>
 
-  <!-- Corner brackets -->
-  <div class="corner-tl"></div>
-  <div class="corner-tr"></div>
-  <div class="corner-bl"></div>
-  <div class="corner-br"></div>
-
-  <!-- Background layers -->
-  <div class="particles-container" id="particles-box"></div>
-  <div id="data-streams-box"></div>
-  <div class="grid-floor"><div class="grid-plane"></div></div>
-  <div class="road-layer">
-    <div class="road-surface"></div>
-  </div>
-
-  <!-- Headlight beams on road -->
-  <div class="beam" id="beam-left"></div>
-  <div class="beam" id="beam-right"></div>
-
-  <!-- ─── BUS 1 : enters from LEFT ─────────────── -->
-  <div class="tn-bus" id="bus-left">
-    <div class="b-back"><div class="b-tail"></div></div>
-    <div class="b-body">
-      <div class="b-upper"></div>
-      <div class="b-wave"></div>
-      <div class="b-lower"></div>
-      <div class="b-stripe"></div>
-    </div>
-    <div class="b-led">TAMIL NADU</div>
-    <div class="b-windows">
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div>
-    </div>
-    <div class="b-text">TAMIL NADU GOVT TRANSPORT</div>
-    <div class="b-front">
-      <div class="b-front-headlight"></div>
-    </div>
-    <div class="b-wheels">
-      <div class="b-wheel"></div>
-      <div class="b-wheel"></div>
-    </div>
-    <div class="b-shadow"></div>
-  </div>
-
-  <!-- ─── BUS 2 : enters from RIGHT ────────────── -->
-  <div class="tn-bus" id="bus-right">
-    <div class="b-back"><div class="b-tail"></div></div>
-    <div class="b-body">
-      <div class="b-upper"></div>
-      <div class="b-wave"></div>
-      <div class="b-lower"></div>
-      <div class="b-stripe"></div>
-    </div>
-    <div class="b-led">TAMIL NADU</div>
-    <div class="b-windows">
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div>
-    </div>
-    <div class="b-text">TAMIL NADU GOVT TRANSPORT</div>
-    <div class="b-front">
-      <div class="b-front-headlight"></div>
-    </div>
-    <div class="b-wheels">
-      <div class="b-wheel"></div>
-      <div class="b-wheel"></div>
-    </div>
-    <div class="b-shadow"></div>
-  </div>
-
-  <!-- ─── BUS 3 : smaller, centre-background ───── -->
-  <div class="tn-bus" id="bus-center">
-    <div class="b-back"></div>
-    <div class="b-body">
-      <div class="b-upper"></div>
-      <div class="b-wave"></div>
-      <div class="b-lower"></div>
-      <div class="b-stripe"></div>
-    </div>
-    <div class="b-led">TAMIL NADU</div>
-    <div class="b-windows">
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div><div class="b-win"></div>
-    </div>
-    <div class="b-front">
-      <div class="b-front-headlight"></div>
-    </div>
-    <div class="b-wheels">
-      <div class="b-wheel"></div>
-      <div class="b-wheel"></div>
-    </div>
-  </div>
-
-  <!-- ─── CENTRE WELCOME TITLE ─────────────────── -->
-  <div class="splash-center">
-    <div class="welcome-small">🚌 GOVERNMENT OF TAMIL NADU</div>
-    <div class="welcome-big">WELCOME TO<br>TAMIL NADU<br>SMART BUS AI</div>
-    <div class="welcome-sub">MTC &nbsp;·&nbsp; TNSTC &nbsp;·&nbsp; SETC &nbsp;·&nbsp; Enterprise Command Portal</div>
-
-    <button class="enter-btn" id="btn-enter-portal" onclick="dismissSplash()">
-      <i class="fa-solid fa-bus-simple"></i>
-      ENTER PORTAL
+  <!-- Text overlay (rendered on top of canvas) -->
+  <div id="splash-overlay">
+    <div id="splash-tagline">&#x1F68C; Government of Tamil Nadu Transport</div>
+    <div id="splash-title">WELCOME TO<br>TAMIL NADU<br>SMART BUS AI</div>
+    <div id="splash-sub">MTC &nbsp;&middot;&nbsp; TNSTC &nbsp;&middot;&nbsp; SETC &nbsp;&middot;&nbsp; Enterprise Command Portal</div>
+    <button id="splash-enter" onclick="dismissSplash()">
+      &#x1F68C;&nbsp; ENTER PORTAL
     </button>
   </div>
 
+  <!-- Corner HUD brackets -->
+  <div class="c-tl"></div>
+  <div class="c-tr"></div>
+  <div class="c-bl"></div>
+  <div class="c-br"></div>
 </div>
 
 <!-- ===============================================
@@ -1014,61 +1031,427 @@
 <script src="/js/map.js"></script>
 <script src="/js/app.js"></script>
 
-<!-- Splash Screen Logic -->
+<!-- =============================================
+     CANVAS SPLASH ENGINE
+     ============================================= -->
 <script>
-(function() {
-  /* ── Floating particles (blue & green tones) ── */
-  var pBox = document.getElementById('particles-box');
-  var pColors = ['#10b981','#1565C0','#60a5fa','#34d399','#f59e0b'];
-  for (var i = 0; i < 60; i++) {
-    var p = document.createElement('div');
-    p.className = 'particle';
-    p.style.left = Math.random() * 100 + '%';
-    var dur = 5 + Math.random() * 7;
-    p.style.animationDuration = dur + 's';
-    p.style.animationDelay = (Math.random() * 6) + 's';
-    var sz = (2 + Math.random() * 4) + 'px';
-    p.style.width = sz; p.style.height = sz;
-    var col = pColors[Math.floor(Math.random() * pColors.length)];
-    p.style.background = col;
-    p.style.boxShadow = '0 0 6px ' + col;
-    pBox.appendChild(p);
+(function(){
+  var canvas = document.getElementById('splash-canvas');
+  var ctx    = canvas.getContext('2d');
+  var W, H;
+  var startTime = null;
+  var frame = 0;
+
+  // ── State ─────────────────────────────────────
+  var bus1X, bus2X;           // current X positions
+  var bus1Target, bus2Target; // final X positions
+  var busW = 340, busH = 120; // bus dimensions
+  var roadY;                  // Y where bus sits
+  var titleShown = false;
+  var enterShown = false;
+  var wheelAngle = 0;
+
+  // Particles array
+  var particles = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    roadY   = H * 0.62;          // bottom of bus on road
+    bus1Target = W * 0.04;       // left bus final X
+    bus2Target = W - busW - W * 0.04; // right bus final X
+    bus1X  = -busW - 50;         // starts off-screen left
+    bus2X  = W + 50;             // starts off-screen right
+    // Reinit particles
+    particles = [];
+    for (var i = 0; i < 70; i++) spawnParticle();
   }
 
-  /* ── Data stream columns (blue tone) ── */
-  var sBox = document.getElementById('data-streams-box');
-  var chars = '01அஆஇஈககடதநபமயரலவழTNSTCMTCSETC';
-  for (var s = 0; s < 14; s++) {
-    var st = document.createElement('div');
-    st.className = 'data-stream';
-    st.style.left = (3 + s * 7) + '%';
-    var inn = document.createElement('div');
-    inn.className = 'data-stream-inner';
-    inn.style.animationDuration = (9 + Math.random() * 10) + 's';
-    inn.style.animationDelay  = (Math.random() * 6) + 's';
-    var txt = '';
-    for (var c = 0; c < 180; c++) txt += chars[Math.floor(Math.random()*chars.length)] + '\n';
-    inn.textContent = txt;
-    st.appendChild(inn);
-    sBox.appendChild(st);
+  function spawnParticle() {
+    var colors = ['#10b981','#1565C0','#60a5fa','#34d399','#f59e0b','#a78bfa'];
+    particles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: 1 + Math.random() * 2.5,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: -0.4 - Math.random() * 0.8,
+      col: colors[Math.floor(Math.random() * colors.length)],
+      alpha: 0.5 + Math.random() * 0.5
+    });
   }
+
+  // ── Easing ────────────────────────────────────
+  function easeOutElastic(t) {
+    if (t === 0 || t === 1) return t;
+    var p = 0.4;
+    return Math.pow(2, -10 * t) * Math.sin((t - p / 4) * (2 * Math.PI) / p) + 1;
+  }
+  function easeOutExpo(t) {
+    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+  }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  // ── Draw helpers ──────────────────────────────
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  function drawWheel(cx, cy, r, angle) {
+    // Tyre
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fill();
+    ctx.strokeStyle = '#374151';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    // Hub
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 0.38, 0, Math.PI * 2);
+    ctx.fillStyle = '#9ca3af';
+    ctx.fill();
+    // Spokes
+    for (var s = 0; s < 5; s++) {
+      var a = angle + s * (Math.PI * 2 / 5);
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * r * 0.38, cy + Math.sin(a) * r * 0.38);
+      ctx.lineTo(cx + Math.cos(a) * r * 0.85, cy + Math.sin(a) * r * 0.85);
+      ctx.strokeStyle = '#6b7280';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
+
+  // Draw a TNSTC bus at (x, y), optionally flipped
+  function drawBus(x, y, w, h, flipped, glowAmt) {
+    var sc = flipped ? -1 : 1;
+    var ox = flipped ? x + w : x; // origin for flip
+
+    ctx.save();
+    ctx.translate(ox, 0);
+    ctx.scale(sc, 1);
+    var bx = flipped ? 0 : x;  // adjusted draw x after flip
+    if (flipped) bx = -w;      // when flipped, draw from -w to 0
+
+    // Shadow under bus
+    ctx.shadowBlur = 0;
+    var shGrad = ctx.createRadialGradient(bx + w/2, y + h + 24, 0, bx + w/2, y + h + 24, w * 0.6);
+    shGrad.addColorStop(0, 'rgba(0,0,0,0.5)');
+    shGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = shGrad;
+    ctx.fillRect(bx, y + h - 2, w, 32);
+
+    // ── Body upper (white/cream) ──
+    ctx.fillStyle = '#dce8f0';
+    roundRect(bx + 16, y, w - 32, h * 0.54, 6);
+    ctx.fill();
+
+    // ── Body lower (royal blue) ──
+    ctx.fillStyle = '#1565C0';
+    ctx.fillRect(bx + 16, y + h * 0.52, w - 32, h * 0.48);
+    // round bottom corners
+    roundRect(bx + 16, y + h * 0.52, w - 32, h * 0.48, 4);
+    ctx.fill();
+
+    // ── Blue wave swoosh on white section ──
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(bx + 16, y, w - 32, h * 0.54); // clip to upper body
+    ctx.clip();
+    ctx.fillStyle = 'rgba(13,71,161,0.38)';
+    ctx.beginPath();
+    ctx.moveTo(bx + 16, y + h * 0.3);
+    ctx.bezierCurveTo(
+      bx + w * 0.2, y + h * 0.12,
+      bx + w * 0.5, y + h * 0.48,
+      bx + w - 32,  y + h * 0.3
+    );
+    ctx.lineTo(bx + w - 32, y + h * 0.54);
+    ctx.lineTo(bx + 16, y + h * 0.54);
+    ctx.closePath();
+    ctx.fill();
+    // second wave
+    ctx.fillStyle = 'rgba(13,71,161,0.22)';
+    ctx.beginPath();
+    ctx.moveTo(bx + 16, y + h * 0.2);
+    ctx.bezierCurveTo(
+      bx + w * 0.15, y + h * 0.04,
+      bx + w * 0.4,  y + h * 0.38,
+      bx + w - 32,   y + h * 0.2
+    );
+    ctx.lineTo(bx + w - 32, y + h * 0.54);
+    ctx.lineTo(bx + 16, y + h * 0.54);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    // ── Yellow stripe at very bottom ──
+    ctx.fillStyle = '#f59e0b';
+    if (glowAmt > 0) {
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = '#f59e0b';
+    }
+    ctx.fillRect(bx + 16, y + h - 10, w - 32, 10);
+    ctx.shadowBlur = 0;
+
+    // ── Windows ──
+    var winCount = 7;
+    var winStartX = bx + 28;
+    var winW = (w - 90) / winCount - 5;
+    var winH = h * 0.28;
+    var winY = y + 9;
+    for (var i = 0; i < winCount; i++) {
+      var wx = winStartX + i * (winW + 5);
+      // glass
+      ctx.fillStyle = 'rgba(147,197,253,0.22)';
+      ctx.strokeStyle = 'rgba(147,197,253,0.55)';
+      ctx.lineWidth = 1.5;
+      roundRect(wx, winY, winW, winH, 2);
+      ctx.fill();
+      ctx.stroke();
+      // glare line
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(wx + 3, winY + 3);
+      ctx.lineTo(wx + winW - 3, winY + 3);
+      ctx.stroke();
+    }
+
+    // ── LED destination board ──
+    var ledX = bx + w - 115;
+    var ledY = y + 5;
+    ctx.fillStyle = '#050d1a';
+    ctx.strokeStyle = '#1e3a8a';
+    ctx.lineWidth = 1.5;
+    roundRect(ledX, ledY, 85, 16, 2);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = glowAmt > 0 ? '#93c5fd' : '#60a5fa';
+    ctx.font = 'bold 7px JetBrains Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('TAMIL NADU', ledX + 42, ledY + 11);
+
+    // ── Front face (boxy blue) ──
+    ctx.fillStyle = '#1256a8';
+    roundRect(bx + w - 22, y + 6, 22, h - 6, 3);
+    ctx.fill();
+    // windshield
+    ctx.fillStyle = 'rgba(147,197,253,0.25)';
+    ctx.strokeStyle = 'rgba(147,197,253,0.5)';
+    ctx.lineWidth = 1.5;
+    roundRect(bx + w - 18, y + 8, 14, h * 0.38, 2);
+    ctx.fill(); ctx.stroke();
+    // headlight
+    var hlX = bx + w - 18;
+    var hlY = y + h - 28;
+    if (glowAmt > 0) {
+      ctx.shadowBlur = 20 + glowAmt * 10;
+      ctx.shadowColor = '#f59e0b';
+    }
+    ctx.fillStyle = '#fef08a';
+    roundRect(hlX, hlY, 14, 10, 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // headlight beam on road
+    if (glowAmt > 0) {
+      var beamGrad = ctx.createLinearGradient(bx + w, y + h, bx + w + 200, y + h + 30);
+      beamGrad.addColorStop(0, 'rgba(254,240,138,0.25)');
+      beamGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = beamGrad;
+      ctx.beginPath();
+      ctx.moveTo(bx + w - 4, y + h - 23);
+      ctx.lineTo(bx + w + 220, roadY + 15);
+      ctx.lineTo(bx + w + 180, roadY + 20);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // ── Back face tail lights ──
+    ctx.fillStyle = '#0f172a';
+    roundRect(bx + 16, y + 6, 14, h - 6, 3);
+    ctx.fill();
+    ctx.fillStyle = '#ef4444';
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = '#ef4444';
+    roundRect(bx + 18, y + h - 28, 10, 10, 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // ── Wheels ──
+    var wr = 20;
+    drawWheel(bx + 60,     y + h + 2, wr, wheelAngle);
+    drawWheel(bx + w - 70, y + h + 2, wr, wheelAngle);
+
+    ctx.restore();
+  }
+
+  // ── Draw background ───────────────────────────
+  function drawBackground(elapsed) {
+    // Deep dark gradient
+    var bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+    bgGrad.addColorStop(0, '#030608');
+    bgGrad.addColorStop(0.6, '#060d18');
+    bgGrad.addColorStop(1, '#0a1520');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Perspective grid
+    var gridOff = (elapsed * 0.04) % 60;
+    ctx.save();
+    ctx.globalAlpha = 0.12;
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 1;
+    var vp = { x: W / 2, y: roadY - 40 }; // vanishing point
+    // Horizontal lines
+    for (var hy = roadY - 40; hy < H + 60; hy += 40) {
+      var prog = (hy - vp.y) / (H - vp.y);
+      ctx.globalAlpha = 0.05 + prog * 0.12;
+      ctx.beginPath();
+      ctx.moveTo(0, hy);
+      ctx.lineTo(W, hy);
+      ctx.stroke();
+    }
+    // Vertical lines (converging to vanishing point)
+    for (var vx = -W; vx < W * 2; vx += 70) {
+      ctx.globalAlpha = 0.08;
+      ctx.beginPath();
+      ctx.moveTo(vp.x + (vx - vp.x) * 0.05, vp.y);
+      ctx.lineTo(vx, H);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Road surface
+    var roadGrad = ctx.createLinearGradient(0, roadY, 0, H);
+    roadGrad.addColorStop(0, '#0b1525');
+    roadGrad.addColorStop(1, '#060e1a');
+    ctx.fillStyle = roadGrad;
+    ctx.fillRect(0, roadY, W, H - roadY);
+
+    // Road top edge glow line
+    ctx.strokeStyle = 'rgba(16,185,129,0.2)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, roadY);
+    ctx.lineTo(W, roadY);
+    ctx.stroke();
+
+    // Dashed centre line (animated)
+    ctx.save();
+    ctx.setLineDash([50, 50]);
+    ctx.lineDashOffset = -(elapsed * 0.15) % 100;
+    ctx.strokeStyle = 'rgba(245,158,11,0.4)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(0, roadY + (H - roadY) * 0.45);
+    ctx.lineTo(W, roadY + (H - roadY) * 0.45);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  function drawParticles() {
+    particles.forEach(function(p) {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= 0.002;
+      if (p.y < 0 || p.alpha <= 0) {
+        p.x = Math.random() * W;
+        p.y = H + 5;
+        p.alpha = 0.5 + Math.random() * 0.5;
+      }
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle = p.col;
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = p.col;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+  }
+
+  // ── Main animation loop ────────────────────────
+  function animate(ts) {
+    if (!startTime) startTime = ts;
+    var elapsed = ts - startTime;  // ms since start
+    frame++;
+
+    // Wheel rotation (faster while buses are moving)
+    wheelAngle += 0.12;
+
+    // Bus 1 from left: starts at 400ms, takes 1800ms to arrive
+    var b1Progress = Math.max(0, Math.min(1, (elapsed - 400) / 1800));
+    bus1X = lerp(-busW - 50, bus1Target, easeOutElastic(b1Progress));
+
+    // Bus 2 from right: starts at 650ms, takes 1800ms to arrive
+    var b2Progress = Math.max(0, Math.min(1, (elapsed - 650) / 1800));
+    bus2X = lerp(W + 50, bus2Target, easeOutElastic(b2Progress));
+
+    var busesArrived = b1Progress >= 1 && b2Progress >= 1;
+    var glowAmt = busesArrived ? 1 : 0;
+
+    // Draw everything
+    drawBackground(elapsed);
+    drawParticles();
+
+    // Draw Bus 1 (enters from left, front faces right = not flipped)
+    drawBus(bus1X, roadY - busH, busW, busH, false, glowAmt);
+
+    // Draw Bus 2 (enters from right, front faces left = flipped)
+    drawBus(bus2X, roadY - busH, busW, busH, true, glowAmt);
+
+    // Show welcome text when buses have arrived
+    if (busesArrived && !titleShown) {
+      titleShown = true;
+      var tagline = document.getElementById('splash-tagline');
+      var title   = document.getElementById('splash-title');
+      var sub     = document.getElementById('splash-sub');
+      tagline.style.color = 'rgba(16,185,129,0.75)';
+      setTimeout(function() {
+        title.classList.add('visible');
+        sub.style.color = 'rgba(96,165,250,0.8)';
+      }, 200);
+      setTimeout(function() {
+        if (!enterShown) {
+          enterShown = true;
+          document.getElementById('splash-enter').classList.add('visible');
+        }
+      }, 1000);
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  // ── Init ──────────────────────────────────────
+  window.addEventListener('resize', resize);
+  resize();
+  requestAnimationFrame(animate);
 })();
 
 function dismissSplash() {
-  var splash = document.getElementById('splash-screen');
+  var splash  = document.getElementById('splash-screen');
   var appRoot = document.getElementById('app-root');
-
   splash.classList.add('exit');
-
   setTimeout(function() {
     splash.style.display = 'none';
     appRoot.style.display = 'flex';
-
-    // Trigger map resize after app becomes visible
     if (typeof dashMap !== 'undefined' && dashMap) {
       setTimeout(function() { dashMap.invalidateSize(); }, 200);
     }
-  }, 800);
+  }, 900);
 }
 </script>
 
