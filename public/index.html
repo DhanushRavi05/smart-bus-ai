@@ -5,18 +5,579 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tamil Nadu SmartBus AI Enterprise Portal — Command Center</title>
 
-  <!-- Google Fonts & FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Leaflet CSS for Maps -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-
-  <!-- Custom Design System -->
   <link rel="stylesheet" href="/css/style.css">
+
+  <style>
+    /* ================================================================
+       3D CINEMATIC SPLASH INTRO SCREEN
+       ================================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+    #splash-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 99999;
+      background: #020408;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    #splash-screen.exit {
+      opacity: 0;
+      transform: scale(1.1);
+      pointer-events: none;
+    }
+
+    /* Animated Grid Floor */
+    .grid-floor {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 55%;
+      perspective: 600px;
+      overflow: hidden;
+    }
+
+    .grid-plane {
+      width: 200%; height: 200%;
+      position: absolute;
+      bottom: -20%; left: -50%;
+      transform: rotateX(65deg);
+      background-image:
+        linear-gradient(rgba(16,185,129,0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16,185,129,0.15) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridScroll 3s linear infinite;
+    }
+
+    @keyframes gridScroll {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 60px; }
+    }
+
+    /* Floating Particles */
+    .particles-container {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px; height: 3px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #10b981;
+      animation: floatUp linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+    }
+
+    /* 3D Bus Scene */
+    .bus-3d-scene {
+      width: 420px; height: 260px;
+      perspective: 900px;
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .bus-3d-wrapper {
+      width: 100%; height: 100%;
+      transform-style: preserve-3d;
+      animation: busRotate 6s ease-in-out infinite;
+      position: relative;
+    }
+
+    @keyframes busRotate {
+      0% { transform: rotateY(-25deg) rotateX(8deg) translateZ(0); }
+      25% { transform: rotateY(15deg) rotateX(5deg) translateZ(20px); }
+      50% { transform: rotateY(25deg) rotateX(-5deg) translateZ(0); }
+      75% { transform: rotateY(-15deg) rotateX(5deg) translateZ(20px); }
+      100% { transform: rotateY(-25deg) rotateX(8deg) translateZ(0); }
+    }
+
+    /* 3D Wireframe Bus Body */
+    .bus-body {
+      position: absolute;
+      transform-style: preserve-3d;
+      top: 30px; left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .bus-face {
+      position: absolute;
+      border: 2px solid;
+      background: rgba(16,185,129,0.04);
+      box-shadow: 0 0 15px rgba(16,185,129,0.15), inset 0 0 15px rgba(16,185,129,0.05);
+      backface-visibility: visible;
+    }
+
+    /* Front face */
+    .bus-front {
+      width: 120px; height: 110px;
+      border-color: #10b981;
+      transform: translateZ(180px) translateX(0px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bus-front::before {
+      content: '';
+      width: 80px; height: 35px;
+      border: 2px solid rgba(6,182,212,0.6);
+      border-radius: 4px;
+      display: block;
+      margin-bottom: 10px;
+      box-shadow: 0 0 10px rgba(6,182,212,0.3);
+    }
+
+    .bus-front::after {
+      content: '';
+      display: flex;
+      width: 100px;
+      height: 10px;
+      border-top: 2px solid #f59e0b;
+      box-shadow: 0 0 8px rgba(245,158,11,0.5);
+    }
+
+    .bus-headlight {
+      position: absolute;
+      bottom: 12px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #f59e0b, transparent);
+      box-shadow: 0 0 20px #f59e0b;
+      animation: headlightPulse 1.5s ease-in-out infinite alternate;
+    }
+
+    .bus-headlight.left { left: 12px; }
+    .bus-headlight.right { right: 12px; }
+
+    @keyframes headlightPulse {
+      0% { box-shadow: 0 0 10px #f59e0b; }
+      100% { box-shadow: 0 0 30px #f59e0b, 0 0 60px rgba(245,158,11,0.3); }
+    }
+
+    /* Back face */
+    .bus-back {
+      width: 120px; height: 110px;
+      border-color: rgba(16,185,129,0.5);
+      transform: translateZ(-180px) translateX(0px) rotateY(180deg);
+    }
+
+    .bus-back::before {
+      content: '';
+      position: absolute;
+      bottom: 10px; left: 10px;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ef4444, transparent);
+      box-shadow: 0 0 15px #ef4444;
+    }
+
+    .bus-back::after {
+      content: '';
+      position: absolute;
+      bottom: 10px; right: 10px;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ef4444, transparent);
+      box-shadow: 0 0 15px #ef4444;
+    }
+
+    /* Side faces */
+    .bus-side {
+      width: 360px; height: 110px;
+      border-color: rgba(16,185,129,0.4);
+    }
+
+    .bus-side-left {
+      transform: translateX(-120px) rotateY(-90deg);
+    }
+
+    .bus-side-right {
+      transform: translateX(120px) rotateY(90deg);
+    }
+
+    /* Windows on sides */
+    .bus-windows {
+      display: flex;
+      gap: 8px;
+      padding: 12px 15px;
+      height: 55px;
+    }
+
+    .bus-window {
+      flex: 1;
+      border: 1.5px solid rgba(6,182,212,0.5);
+      border-radius: 3px;
+      background: rgba(6,182,212,0.06);
+      box-shadow: inset 0 0 8px rgba(6,182,212,0.1);
+      animation: windowGlow 2s ease-in-out infinite alternate;
+    }
+
+    .bus-window:nth-child(odd) { animation-delay: 0.3s; }
+    .bus-window:nth-child(even) { animation-delay: 0.8s; }
+
+    @keyframes windowGlow {
+      0% { background: rgba(6,182,212,0.04); }
+      100% { background: rgba(6,182,212,0.12); }
+    }
+
+    /* Top face */
+    .bus-top {
+      width: 120px; height: 360px;
+      border-color: rgba(16,185,129,0.25);
+      transform: translateY(-55px) translateX(0px) translateZ(0px) rotateX(90deg);
+    }
+
+    /* Bottom face */
+    .bus-bottom {
+      width: 120px; height: 360px;
+      border-color: rgba(16,185,129,0.15);
+      transform: translateY(55px) translateX(0px) translateZ(0px) rotateX(-90deg);
+    }
+
+    /* Wheels */
+    .bus-wheel {
+      position: absolute;
+      bottom: -22px;
+      width: 30px; height: 30px;
+      border: 3px solid #f59e0b;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(245,158,11,0.4);
+      animation: wheelSpin 1s linear infinite;
+    }
+
+    .bus-wheel::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 8px; height: 8px;
+      background: #f59e0b;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    @keyframes wheelSpin {
+      0% { transform: rotateZ(0deg); }
+      100% { transform: rotateZ(360deg); }
+    }
+
+    /* Bus Route Number Display */
+    .bus-route-display {
+      position: absolute;
+      top: 8px; left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 800;
+      color: #10b981;
+      text-shadow: 0 0 8px #10b981;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    /* Ground shadow */
+    .bus-shadow {
+      position: absolute;
+      bottom: -40px; left: 50%;
+      transform: translateX(-50%);
+      width: 300px; height: 20px;
+      background: radial-gradient(ellipse, rgba(16,185,129,0.2), transparent);
+      filter: blur(8px);
+      animation: shadowPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes shadowPulse {
+      0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 0.6; }
+      50% { transform: translateX(-50%) scaleX(1.2); opacity: 1; }
+    }
+
+    /* Branding & Title */
+    .splash-branding {
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .splash-logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .splash-logo-icon {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #10b981, #3b82f6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #fff;
+      box-shadow: 0 0 30px rgba(16,185,129,0.4);
+      animation: logoPulse 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes logoPulse {
+      0% { box-shadow: 0 0 20px rgba(16,185,129,0.3); }
+      100% { box-shadow: 0 0 40px rgba(16,185,129,0.6), 0 0 80px rgba(59,130,246,0.2); }
+    }
+
+    .splash-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: 4px;
+      background: linear-gradient(90deg, #ffffff, #10b981, #06b6d4, #ffffff);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: titleShimmer 4s ease-in-out infinite;
+    }
+
+    @keyframes titleShimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .splash-subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .splash-division-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      color: rgba(6,182,212,0.7);
+      letter-spacing: 2px;
+      margin-bottom: 32px;
+    }
+
+    /* System Init Status Lines */
+    .init-status {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: rgba(16,185,129,0.6);
+      text-align: left;
+      margin-bottom: 28px;
+      line-height: 1.8;
+      min-height: 90px;
+    }
+
+    .init-line {
+      opacity: 0;
+      animation: lineAppear 0.4s ease forwards;
+    }
+
+    .init-line .check { color: #10b981; }
+    .init-line .warn { color: #f59e0b; }
+
+    @keyframes lineAppear {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Enter Button */
+    .enter-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 44px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #ffffff;
+      background: transparent;
+      border: 2px solid #10b981;
+      border-radius: 8px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      z-index: 10;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: btnFadeIn 0.6s ease forwards 4.5s;
+    }
+
+    .enter-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(16,185,129,0.2), transparent);
+      animation: btnSweep 2s linear infinite;
+    }
+
+    @keyframes btnSweep {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    @keyframes btnFadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .enter-btn:hover {
+      background: rgba(16,185,129,0.15);
+      box-shadow: 0 0 30px rgba(16,185,129,0.4), inset 0 0 30px rgba(16,185,129,0.1);
+      transform: scale(1.05);
+      border-color: #06b6d4;
+    }
+
+    /* Scanner Lines */
+    .scanner-h {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(16,185,129,0.4), transparent);
+      animation: scanH 4s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes scanH {
+      0% { top: 0; }
+      100% { top: 100%; }
+    }
+
+    /* Data Stream Columns */
+    .data-stream {
+      position: absolute;
+      top: 0;
+      width: 14px;
+      height: 100%;
+      overflow: hidden;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    .data-stream-inner {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      line-height: 16px;
+      color: #10b981;
+      animation: streamFall linear infinite;
+      white-space: nowrap;
+    }
+
+    @keyframes streamFall {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100vh); }
+    }
+  </style>
 </head>
 <body>
 
-<div id="app-root">
+<!-- ===============================================
+     3D CINEMATIC SPLASH INTRO SCREEN
+     =============================================== -->
+<div id="splash-screen">
+  <!-- Background Effects -->
+  <div class="scanner-h"></div>
+  <div class="grid-floor"><div class="grid-plane"></div></div>
+  <div class="particles-container" id="particles-box"></div>
+
+  <!-- Data Stream Columns -->
+  <div id="data-streams-box"></div>
+
+  <!-- 3D WIREFRAME BUS -->
+  <div class="bus-3d-scene">
+    <div class="bus-3d-wrapper">
+      <div class="bus-body">
+        <!-- Front -->
+        <div class="bus-face bus-front">
+          <div class="bus-headlight left"></div>
+          <div class="bus-headlight right"></div>
+          <div class="bus-route-display">MTC 21G EXPRESS</div>
+        </div>
+        <!-- Back -->
+        <div class="bus-face bus-back"></div>
+        <!-- Left Side -->
+        <div class="bus-face bus-side bus-side-left">
+          <div class="bus-windows">
+            <div class="bus-window"></div>
+            <div class="bus-window"></div>
+            <div class="bus-window"></div>
+            <div class="bus-window"></div>
+            <div class="bus-window"></div>
+            <div class="bus-window"></div>
+            <div class="bus-window"></div>
+          </div>
+          <div class="bus-wheel" style="left: 40px;"></div>
+          <div class="bus-wheel" style="right: 40px;"></div>
+        </div>
+        <!-- Right Side -->
+        <div class="bus-face bus-side bus-side-right">
+          <div class="bus-windows">
+            <div class="bus-window"></div>
+            <div class="bus-window"></div>
+            <div class="bus-window"></div>
+            <div class="bus-window"></div>
+            <div class="bus-window"></div>
+            <div class="bus-window"></div>
+            <div class="bus-window"></div>
+          </div>
+          <div class="bus-wheel" style="left: 40px;"></div>
+          <div class="bus-wheel" style="right: 40px;"></div>
+        </div>
+        <!-- Top -->
+        <div class="bus-face bus-top"></div>
+        <!-- Bottom -->
+        <div class="bus-face bus-bottom"></div>
+      </div>
+      <div class="bus-shadow"></div>
+    </div>
+  </div>
+
+  <!-- Branding -->
+  <div class="splash-branding">
+    <div class="splash-logo-row">
+      <div class="splash-logo-icon"><i class="fa-solid fa-bus-simple"></i></div>
+      <div class="splash-title">TN SMARTBUS AI</div>
+    </div>
+    <div class="splash-subtitle">ENTERPRISE COMMAND PORTAL</div>
+    <div class="splash-division-text">Tamil Nadu Transport Corporation — MTC · TNSTC · SETC</div>
+
+    <div class="init-status" id="init-status-lines"></div>
+
+    <button class="enter-btn" id="btn-enter-portal" onclick="dismissSplash()">
+      <i class="fa-solid fa-shield-halved"></i>
+      INITIALIZE SYSTEM
+    </button>
+  </div>
+</div>
+
+<!-- ===============================================
+     MAIN APPLICATION (HIDDEN UNTIL SPLASH EXITS)
+     =============================================== -->
+<div id="app-root" style="display: none;">
   <!-- 1. LEFT VERTICAL NAVIGATION SIDEBAR (280px) -->
   <aside class="left-sidebar">
     <div class="sidebar-header">
@@ -29,7 +590,6 @@
       </div>
     </div>
 
-    <!-- Navigation Menu Items -->
     <nav class="nav-menu">
       <a class="nav-item active" data-view="view-dashboard">
         <i class="fa-solid fa-chart-pie"></i>
@@ -81,32 +641,27 @@
     </div>
   </aside>
 
-  <!-- 2. MAIN CONTENT AREA (EDGE-TO-EDGE FULL SCREEN) -->
+  <!-- 2. MAIN CONTENT AREA -->
   <main class="main-wrapper">
-    <!-- Top Header Bar -->
     <header class="top-header">
       <div class="page-title">
         <h2 id="header-view-title">AI Fleet Command Dashboard</h2>
         <p>Tamil Nadu Public Transport Corporations (MTC, TNSTC, SETC)</p>
       </div>
-
       <div class="header-actions">
         <div class="cyber-pill">
           <span class="pulse-dot"></span>
           <span id="system-status-text">AES-256 ENCRYPTED GATEWAY</span>
         </div>
-
         <button class="btn-cyber" id="btn-register-bus">
           <i class="fa-solid fa-plus"></i> Register New Bus
         </button>
-
         <button class="btn-cyber" style="background: rgba(59,130,246,0.2); border: 1px solid var(--accent-blue);" id="btn-login-modal">
           <i class="fa-solid fa-right-to-bracket"></i> Login / Role
         </button>
       </div>
     </header>
 
-    <!-- Content Sections Container -->
     <div class="content-area">
 
       <!-- VIEW 1: AI COMMAND DASHBOARD -->
@@ -120,7 +675,6 @@
             <div class="metric-val" id="metric-active-buses">--</div>
             <small style="color: var(--accent-green);">100% Tracking Active</small>
           </div>
-
           <div class="glass-card">
             <div class="metric-header">
               <span>LIVE COMMUTERS</span>
@@ -129,7 +683,6 @@
             <div class="metric-val" id="metric-passengers">--</div>
             <small style="color: var(--accent-blue);">AI Headcount Sensors</small>
           </div>
-
           <div class="glass-card">
             <div class="metric-header">
               <span>OVERLOADED BUSES</span>
@@ -138,7 +691,6 @@
             <div class="metric-val" id="metric-overload-count" style="color: var(--accent-amber);">--</div>
             <small style="color: var(--accent-amber);">Capacity Limit Exceeded</small>
           </div>
-
           <div class="glass-card">
             <div class="metric-header">
               <span>BIOMETRIC DUTY PASS</span>
@@ -148,7 +700,6 @@
             <small style="color: var(--accent-cyan);">Driver AI Duty Scan</small>
           </div>
         </div>
-
         <div class="glass-card">
           <h3 style="margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
             <span><i class="fa-solid fa-map-location-dot" style="color: var(--accent-green); margin-right: 8px;"></i> Live Tamil Nadu Fleet Movements</span>
@@ -188,7 +739,6 @@
               </div>
             </div>
           </div>
-
           <div class="glass-card">
             <h4><i class="fa-solid fa-users-viewfinder" style="color: var(--accent-blue);"></i> AI Passenger Overload Sensor Camera (TN-01-N-5700)</h4>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Computer vision passenger density & headcount scanner.</p>
@@ -205,10 +755,9 @@
       <!-- VIEW 4: AI FACE RECOGNITION BIOMETRIC PORTAL -->
       <section id="view-biometrics" class="view-section">
         <div class="glass-card" style="margin-bottom: 20px;">
-          <h3><i class="fa-solid fa-face-viewfinder" style="color: var(--accent-green);"></i> AI Driver & Conductor Biometric Verification Module</h3>
+          <h3><i class="fa-solid fa-fingerprint" style="color: var(--accent-green);"></i> AI Driver & Conductor Biometric Verification Module</h3>
           <p style="font-size: 0.85rem; color: var(--text-muted);">68-Point Facial Landmark Mesh Scan to verify identity, sobriety, and issue digital duty permits before vehicle startup.</p>
         </div>
-
         <div class="biometric-wrapper">
           <div class="glass-card">
             <h4 style="margin-bottom: 12px;">Live Biometric Facial Mesh Scanner</h4>
@@ -225,7 +774,6 @@
               </button>
             </div>
           </div>
-
           <div class="glass-card">
             <h4 style="margin-bottom: 16px;">Verified Employee Duty Authorization</h4>
             <div id="biometric-result-card" style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
@@ -237,7 +785,6 @@
                   <p id="bio-result-division" style="font-size: 0.78rem; color: var(--text-muted);">MTC Chennai Central Division</p>
                 </div>
               </div>
-
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
                 <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px;">
                   <span style="font-size: 0.75rem; color: var(--text-dim);">FACIAL MATCH</span>
@@ -248,7 +795,6 @@
                   <p id="bio-result-sobriety" style="font-size: 0.85rem; font-weight: 700; color: var(--accent-green);">0.00% PASSED</p>
                 </div>
               </div>
-
               <div style="background: rgba(16,185,129,0.1); border: 1px dashed var(--accent-green); padding: 12px; border-radius: 8px; font-size: 0.8rem; color: var(--accent-green); text-align: center;">
                 <i class="fa-solid fa-circle-check"></i> DIGITAL DUTY DISPATCH PERMIT GENERATED<br>
                 <span id="bio-result-permit" style="font-family: monospace; font-weight: 700;">PERMIT-TN-2026-88910</span>
@@ -275,9 +821,7 @@
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody id="fleet-table-body">
-                <!-- Dynamically populated via app.js -->
-              </tbody>
+              <tbody id="fleet-table-body"></tbody>
             </table>
           </div>
         </div>
@@ -299,9 +843,7 @@
                   <th>Est. Time</th>
                 </tr>
               </thead>
-              <tbody id="routes-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
+              <tbody id="routes-table-body"></tbody>
             </table>
           </div>
         </div>
@@ -322,9 +864,7 @@
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody id="security-table-body">
-                <!-- Dynamically populated -->
-              </tbody>
+              <tbody id="security-table-body"></tbody>
             </table>
           </div>
         </div>
@@ -335,9 +875,7 @@
         <div class="glass-card">
           <h3>Conductor Ticketing vs Headcount Audit Scanner</h3>
           <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Compares automated passenger counter sensors against tickets issued by ticket machine.</p>
-          <div id="alerts-container">
-            <!-- Dynamically rendered alerts -->
-          </div>
+          <div id="alerts-container"></div>
         </div>
       </section>
 
@@ -357,12 +895,11 @@
   </main>
 </div>
 
-<!-- MODAL 1: AUTHENTICATION LOGIN MODAL -->
+<!-- MODAL 1: AUTH LOGIN -->
 <div class="modal-overlay" id="auth-modal">
   <div class="modal-card">
     <h3 style="margin-bottom: 8px; color: #fff;">User Authentication Portal</h3>
     <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">Select role or enter credentials to sign into Tamil Nadu Transport Portal.</p>
-    
     <form id="auth-form">
       <div class="form-group">
         <label>Select Authority Role</label>
@@ -373,17 +910,14 @@
           <option value="passenger">Public Passenger</option>
         </select>
       </div>
-
       <div class="form-group">
         <label>Official Email Address</label>
         <input type="email" class="form-control" id="auth-email" value="director@tnstc.gov.in" required>
       </div>
-
       <div class="form-group">
         <label>Password</label>
         <input type="password" class="form-control" id="auth-password" value="admin123" required>
       </div>
-
       <div style="display: flex; gap: 12px; margin-top: 24px;">
         <button type="button" class="btn-cyber" style="background: transparent; border: 1px solid var(--border-color); flex: 1;" id="btn-close-auth">Cancel</button>
         <button type="submit" class="btn-cyber" style="flex: 1;">Authenticate</button>
@@ -392,18 +926,16 @@
   </div>
 </div>
 
-<!-- MODAL 2: REGISTER NEW BUS MODAL -->
+<!-- MODAL 2: REGISTER BUS -->
 <div class="modal-overlay" id="register-bus-modal">
   <div class="modal-card">
     <h3 style="margin-bottom: 8px; color: #fff;">Register New Fleet Vehicle</h3>
     <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">Add a new bus to the Tamil Nadu Transport tracking system.</p>
-    
     <form id="register-bus-form">
       <div class="form-group">
         <label>Bus Registration Number (e.g. TN-01-N-9988)</label>
         <input type="text" class="form-control" id="reg-bus-number" placeholder="TN-01-N-9988" required>
       </div>
-
       <div class="form-group">
         <label>Transport Division</label>
         <select class="form-control" id="reg-division">
@@ -414,7 +946,6 @@
           <option value="SETC Express">SETC Express</option>
         </select>
       </div>
-
       <div class="form-group">
         <label>Assign Route</label>
         <select class="form-control" id="reg-route-id">
@@ -424,17 +955,14 @@
           <option value="route_SETC_CHE_MDU">SETC 826 (Chennai - Madurai)</option>
         </select>
       </div>
-
       <div class="form-group">
         <label>Driver Name</label>
         <input type="text" class="form-control" id="reg-driver-name" value="Ramasamy M." required>
       </div>
-
       <div class="form-group">
         <label>Conductor Name</label>
         <input type="text" class="form-control" id="reg-conductor-name" value="Karthik N." required>
       </div>
-
       <div style="display: flex; gap: 12px; margin-top: 24px;">
         <button type="button" class="btn-cyber" style="background: transparent; border: 1px solid var(--border-color); flex: 1;" id="btn-close-register">Cancel</button>
         <button type="submit" class="btn-cyber" style="flex: 1;">Save Vehicle</button>
@@ -443,12 +971,86 @@
   </div>
 </div>
 
-<!-- Socket.IO & Leaflet Scripts -->
+<!-- Scripts -->
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<!-- App & Map Modules -->
 <script src="/js/map.js"></script>
 <script src="/js/app.js"></script>
+
+<!-- Splash Screen Logic -->
+<script>
+(function() {
+  // Generate particles
+  var particlesBox = document.getElementById('particles-box');
+  for (var i = 0; i < 50; i++) {
+    var p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (4 + Math.random() * 6) + 's';
+    p.style.animationDelay = (Math.random() * 5) + 's';
+    p.style.width = (2 + Math.random() * 3) + 'px';
+    p.style.height = p.style.width;
+    particlesBox.appendChild(p);
+  }
+
+  // Generate data stream columns
+  var streamsBox = document.getElementById('data-streams-box');
+  var chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ';
+  for (var s = 0; s < 12; s++) {
+    var stream = document.createElement('div');
+    stream.className = 'data-stream';
+    stream.style.left = (5 + s * 8.5) + '%';
+    var inner = document.createElement('div');
+    inner.className = 'data-stream-inner';
+    inner.style.animationDuration = (8 + Math.random() * 12) + 's';
+    inner.style.animationDelay = (Math.random() * 5) + 's';
+    var text = '';
+    for (var c = 0; c < 200; c++) {
+      text += chars[Math.floor(Math.random() * chars.length)] + '\n';
+    }
+    inner.textContent = text;
+    stream.appendChild(inner);
+    streamsBox.appendChild(stream);
+  }
+
+  // System initialization status lines
+  var lines = [
+    { text: '[✓] Secure Gateway Handshake — TLS 1.3 Established', delay: 500, type: 'check' },
+    { text: '[✓] Tamil Nadu Fleet Database Connected — 5 Active Buses', delay: 1200, type: 'check' },
+    { text: '[✓] AI Biometric Engine Online — 68-Point Landmark Mesh Ready', delay: 2000, type: 'check' },
+    { text: '[✓] GPS Satellite Telemetry Stream Active — 38 Districts', delay: 2800, type: 'check' },
+    { text: '[⚠] Alert: MTC 570 OMR Overloaded (58/55 Commuters)', delay: 3500, type: 'warn' },
+    { text: '[✓] SHA-256 Encryption Payload Verified — System Ready', delay: 4200, type: 'check' }
+  ];
+
+  var statusEl = document.getElementById('init-status-lines');
+  lines.forEach(function(line) {
+    setTimeout(function() {
+      var div = document.createElement('div');
+      div.className = 'init-line';
+      div.innerHTML = '<span class="' + line.type + '">' + line.text + '</span>';
+      statusEl.appendChild(div);
+    }, line.delay);
+  });
+})();
+
+function dismissSplash() {
+  var splash = document.getElementById('splash-screen');
+  var appRoot = document.getElementById('app-root');
+
+  splash.classList.add('exit');
+
+  setTimeout(function() {
+    splash.style.display = 'none';
+    appRoot.style.display = 'flex';
+
+    // Trigger map resize after app becomes visible
+    if (typeof dashMap !== 'undefined' && dashMap) {
+      setTimeout(function() { dashMap.invalidateSize(); }, 200);
+    }
+  }, 800);
+}
+</script>
+
 </body>
 </html>
