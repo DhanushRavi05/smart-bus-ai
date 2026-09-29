@@ -1,0 +1,33 @@
+<div id="splash-screen">
+
+  <!-- Background layers -->
+  <div class="particles-container" id="particles-box"></div>
+
+  <!-- ─── BUS 1 : MTC (Left) ─────────────── -->
+  <div class="real-bus" id="bus-left-real">
+    <img src="/images/mtc_bus_real.png" alt="MTC Bus">
+  </div>
+
+  <!-- ─── BUS 2 : SETC (Right) ────────────── -->
+  <div class="real-bus" id="bus-right-real">
+    <img src="/images/setc_bus_real.png" alt="SETC Bus">
+  </div>
+
+  <!-- ─── BUS 3 : TNSTC (Center Background) ── -->
+  <div class="real-bus" id="bus-center-real">
+    <img src="/images/tnstc_bus_real.png" alt="TNSTC Bus">
+  </div>
+
+  <!-- ─── CENTRE WELCOME TITLE ─────────────────── -->
+  <div class="splash-center">
+    <div class="welcome-small">🚌 GOVERNMENT OF TAMIL NADU</div>
+    <div class="welcome-big">WELCOME TO<br>TAMIL NADU<br>SMART BUS AI</div>
+    <div class="welcome-sub">MTC &nbsp;·&nbsp; TNSTC &nbsp;·&nbsp; SETC &nbsp;·&nbsp; Enterprise Command Portal</div>
+
+    <button class="enter-btn" id="btn-enter-portal" onclick="dismissSplash()">
+      <i class="fa-solid fa-bus-simple"></i>
+      ENTER PORTAL
+    </button>
+  </div>
+
+</div>

@@ -1,0 +1,159 @@
+    /* ── SPLASH ROOT ───────────────────────────────────── */
+    #splash-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 99999;
+      background: url('/images/real_highway_bg.jpg') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: opacity 0.9s cubic-bezier(0.4,0,0.2,1), transform 0.9s cubic-bezier(0.4,0,0.2,1);
+    }
+    #splash-screen.exit {
+      opacity: 0;
+      transform: scale(1.08);
+      pointer-events: none;
+    }
+
+    .particles-container {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .real-bus {
+      position: absolute;
+      bottom: 2%;
+      z-index: 20;
+    }
+    
+    .real-bus img {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 20px 20px rgba(0,0,0,0.8));
+    }
+
+    /* ── BUS 1 — enters from LEFT ───── */
+    #bus-left-real {
+      width: 45%;
+      left: -60%;
+      animation: busEnterLeftReal 2.5s cubic-bezier(0.16,1,0.3,1) forwards 0.4s;
+    }
+    @keyframes busEnterLeftReal {
+      0%   { left: -60%; transform: scale(0.9); opacity: 0; }
+      100% { left: 2%; transform: scale(1); opacity: 1; }
+    }
+
+    /* ── BUS 2 — enters from RIGHT ────── */
+    #bus-right-real {
+      width: 45%;
+      right: -60%;
+      animation: busEnterRightReal 2.5s cubic-bezier(0.16,1,0.3,1) forwards 0.7s;
+    }
+    @keyframes busEnterRightReal {
+      0%   { right: -60%; transform: scale(0.9) scaleX(-1); opacity: 0; }
+      100% { right: 2%; transform: scale(1) scaleX(-1); opacity: 1; }
+    }
+
+    /* ── BUS 3 — centre background fade ── */
+    #bus-center-real {
+      width: 30%;
+      left: 50%;
+      bottom: 25%;
+      transform: translateX(-50%) scale(0.8);
+      opacity: 0;
+      z-index: 15;
+      animation: busCenterInReal 2s ease forwards 1.2s;
+    }
+    @keyframes busCenterInReal {
+      0%   { opacity: 0; transform: translateX(-50%) scale(0.5); }
+      100% { opacity: 0.8; transform: translateX(-50%) scale(0.8); }
+    }
+
+    /* ── WELCOME TITLE BURST ────────────────────────────── */
+    .splash-center {
+      position: relative;
+      z-index: 30;
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    .welcome-small {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      letter-spacing: 8px;
+      color: #fff;
+      text-transform: uppercase;
+      opacity: 0;
+      text-shadow: 0 0 10px rgba(0,0,0,0.8);
+      animation: fadeSlideUp 0.6s ease forwards 2.5s;
+      margin-bottom: 10px;
+    }
+    .welcome-big {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 900;
+      letter-spacing: 3px;
+      line-height: 1.2;
+      color: #ffffff;
+      text-shadow: 0 0 20px rgba(0,0,0,0.9), 0 0 40px rgba(21,101,192,0.8);
+      opacity: 0;
+      animation: welcomeBurst 0.9s cubic-bezier(0.34,1.56,0.64,1) forwards 2.8s;
+    }
+    .welcome-sub {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      color: #bfdbfe;
+      text-shadow: 0 0 10px rgba(0,0,0,0.8);
+      letter-spacing: 3px;
+      margin-top: 15px;
+      opacity: 0;
+      animation: fadeSlideUp 0.6s ease forwards 3.1s;
+    }
+
+    /* ── ANIMATIONS ─────────────────────────────────────── */
+    @keyframes fadeSlideUp {
+      0%   { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes welcomeBurst {
+      0%   { opacity: 0; transform: scale(0.7) translateY(20px); filter: blur(10px); }
+      50%  { opacity: 1; transform: scale(1.05) translateY(-5px); filter: blur(0px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
+    }
+
+    /* ── ENTER BUTTON ───────────────────────────────────── */
+    .enter-btn {
+      position: relative;
+      margin-top: 40px;
+      padding: 16px 40px;
+      background: linear-gradient(135deg, rgba(21,101,192,0.8), rgba(16,185,129,0.8));
+      border: 2px solid #60a5fa;
+      border-radius: 4px;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(21,101,192,0.6);
+      transition: all 0.3s ease;
+      opacity: 0;
+      animation: btnFadeIn 0.8s ease forwards 3.6s;
+    }
+    .enter-btn:hover {
+      background: linear-gradient(135deg, rgba(21,101,192,1), rgba(16,185,129,1));
+      box-shadow: 0 0 40px rgba(21,101,192,0.8), 0 0 20px rgba(16,185,129,0.6);
+      transform: scale(1.05);
+      border-color: #10b981;
+    }
+    @keyframes btnFadeIn {
+      0%   { opacity: 0; transform: translateY(18px) scale(0.9); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }

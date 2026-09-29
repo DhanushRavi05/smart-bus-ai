@@ -22,7 +22,8 @@
       top: 0; left: 0;
       width: 100vw; height: 100vh;
       z-index: 99999;
-      background: #030608;
+      background: url('/images/real_highway_bg.jpg') no-repeat center center;
+      background-size: cover;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -36,326 +37,61 @@
       pointer-events: none;
     }
 
-    /* ── ROAD & GRID FLOOR ─────────────────────────────── */
-    .road-layer {
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 100%; height: 48%;
-      background: linear-gradient(to top, #0a0f16 0%, #0d1520 60%, transparent 100%);
-      z-index: 1;
-    }
-    .road-surface {
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 100%; height: 30%;
-      background: #0e1825;
-      border-top: 3px solid rgba(16,185,129,0.15);
-    }
-    /* Dashed centre line */
-    .road-surface::before {
-      content: '';
-      position: absolute;
-      top: 50%; left: 0;
-      width: 100%; height: 3px;
-      background: repeating-linear-gradient(90deg,
-        rgba(245,158,11,0.5) 0px, rgba(245,158,11,0.5) 60px,
-        transparent 60px, transparent 120px);
-    }
-    /* Glowing road edges */
-    .road-surface::after {
-      content: '';
+    .particles-container {
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background:
-        linear-gradient(90deg, rgba(16,185,129,0.12) 0px, transparent 200px),
-        linear-gradient(270deg, rgba(16,185,129,0.12) 0px, transparent 200px);
-    }
-    /* Perspective grid in background */
-    .grid-floor {
-      position: absolute;
-      bottom: 28%; left: 0;
-      width: 100%; height: 45%;
-      perspective: 500px;
-      overflow: hidden;
-      z-index: 0;
-    }
-    .grid-plane {
-      width: 200%; height: 200%;
-      position: absolute;
-      bottom: -20%; left: -50%;
-      transform: rotateX(70deg);
-      background-image:
-        linear-gradient(rgba(16,185,129,0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(16,185,129,0.08) 1px, transparent 1px);
-      background-size: 70px 70px;
-      animation: gridScroll 2.5s linear infinite;
-    }
-    @keyframes gridScroll {
-      0%   { background-position: 0 0; }
-      100% { background-position: 0 70px; }
-    }
-
-    /* ── PARTICLES ─────────────────────────────────────── */
-    .particle {
-      position: absolute;
-      border-radius: 50%;
-      animation: floatUp linear infinite;
-      opacity: 0;
       pointer-events: none;
-    }
-    @keyframes floatUp {
-      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
-      10%  { opacity: 1; }
-      90%  { opacity: 0.5; }
-      100% { transform: translateY(-10vh) scale(1.4); opacity: 0; }
+      z-index: 10;
     }
 
-    /* ── TNSTC BUS SHAPE (2D side-profile CSS) ─────────── */
-    /* Each bus: white upper body, royal blue lower, yellow stripe, wave, windows, wheels */
-    .tn-bus {
+    .real-bus {
       position: absolute;
-      bottom: 28%;          /* sit on the road */
-      width: 320px;
-      height: 130px;
+      bottom: 2%;
       z-index: 20;
     }
-
-    /* ─ bus body shell ─ */
-    .tn-bus .b-body {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      border-radius: 6px 6px 0 0;
-      overflow: hidden;
-    }
-    /* upper white section */
-    .tn-bus .b-upper {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 52%;
-      background: linear-gradient(to bottom, #f0f4f8 0%, #dde8f0 100%);
-    }
-    /* lower royal blue section */
-    .tn-bus .b-lower {
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 100%; height: 52%;
-      background: linear-gradient(to bottom, #1565C0 0%, #0D47A1 100%);
-    }
-    /* yellow bottom stripe */
-    .tn-bus .b-stripe {
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 100%; height: 9px;
-      background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b);
-      box-shadow: 0 0 6px rgba(245,158,11,0.5);
-    }
-    /* blue wave swoosh on white section */
-    .tn-bus .b-wave {
-      position: absolute;
-      top: 18%; left: -10%;
-      width: 120%; height: 55%;
-      background: radial-gradient(ellipse 60% 40% at 40% 80%, rgba(13,71,161,0.45) 0%, transparent 70%);
-      clip-path: ellipse(55% 35% at 40% 70%);
-    }
-    /* LED destination board at top-front */
-    .tn-bus .b-led {
-      position: absolute;
-      top: 5px; right: 12px;
-      width: 110px; height: 18px;
-      background: #0a1628;
-      border: 1.5px solid #1e40af;
-      border-radius: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 7px;
-      font-weight: 700;
-      color: #60a5fa;
-      letter-spacing: 1.5px;
-      text-shadow: 0 0 6px #3b82f6;
-      box-shadow: 0 0 8px rgba(59,130,246,0.3);
-      animation: ledBlink 2s ease-in-out infinite alternate;
-    }
-    @keyframes ledBlink {
-      0%   { color: #60a5fa; text-shadow: 0 0 6px #3b82f6; }
-      100% { color: #93c5fd; text-shadow: 0 0 12px #60a5fa, 0 0 20px #3b82f6; }
-    }
-    /* windows row */
-    .tn-bus .b-windows {
-      position: absolute;
-      top: 22px; left: 16px;
-      display: flex;
-      gap: 7px;
-    }
-    .tn-bus .b-win {
-      width: 30px; height: 30px;
-      background: rgba(147,197,253,0.18);
-      border: 1.5px solid rgba(147,197,253,0.5);
-      border-radius: 2px;
-      box-shadow: inset 0 0 6px rgba(147,197,253,0.12);
-      animation: winShimmer 3s ease-in-out infinite alternate;
-    }
-    .tn-bus .b-win:nth-child(even) { animation-delay: 0.7s; }
-    @keyframes winShimmer {
-      0%   { background: rgba(147,197,253,0.12); }
-      100% { background: rgba(147,197,253,0.28); }
-    }
-    /* front face of bus (right for left-facing bus) */
-    .tn-bus .b-front {
-      position: absolute;
-      top: 5%; right: 0;
-      width: 22px; height: 90%;
-      background: linear-gradient(to bottom, #1e40af 0%, #1565C0 50%, #0D47A1 100%);
-      border-radius: 0 4px 4px 0;
-    }
-    .tn-bus .b-front-headlight {
-      position: absolute;
-      bottom: 22px; right: 4px;
-      width: 14px; height: 10px;
-      background: radial-gradient(circle, #fef08a, #f59e0b);
-      border-radius: 2px;
-      box-shadow: 0 0 14px #f59e0b, 0 0 30px rgba(245,158,11,0.4);
-      animation: hlPulse 1.2s ease-in-out infinite alternate;
-    }
-    @keyframes hlPulse {
-      0%   { box-shadow: 0 0 10px #f59e0b; }
-      100% { box-shadow: 0 0 24px #f59e0b, 0 0 50px rgba(245,158,11,0.3); }
-    }
-    /* back face tail lights */
-    .tn-bus .b-back {
-      position: absolute;
-      top: 5%; left: 0;
-      width: 10px; height: 90%;
-      background: linear-gradient(to bottom, #1e293b 0%, #0f172a 100%);
-      border-radius: 4px 0 0 4px;
-    }
-    .tn-bus .b-tail {
-      position: absolute;
-      bottom: 22px; left: 2px;
-      width: 8px; height: 8px;
-      background: radial-gradient(circle, #fca5a5, #ef4444);
-      border-radius: 1px;
-      box-shadow: 0 0 8px #ef4444;
-      animation: tailPulse 1.5s ease-in-out infinite alternate;
-    }
-    @keyframes tailPulse {
-      0%   { box-shadow: 0 0 6px #ef4444; }
-      100% { box-shadow: 0 0 16px #ef4444, 0 0 30px rgba(239,68,68,0.4); }
-    }
-    /* wheels */
-    .tn-bus .b-wheels {
-      position: absolute;
-      bottom: -18px; left: 0;
+    
+    .real-bus img {
       width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 40px;
-    }
-    .tn-bus .b-wheel {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #374151, #111827);
-      border: 4px solid #4b5563;
-      box-shadow: 0 0 8px rgba(0,0,0,0.8), inset 0 0 6px rgba(255,255,255,0.08);
-      animation: wheelSpin linear infinite;
-    }
-    .tn-bus .b-wheel::after {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 12px; height: 12px;
-      background: #9ca3af;
-      border-radius: 50%;
-      transform: translate(-50%,-50%);
-    }
-    @keyframes wheelSpin {
-      0%   { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    /* tamilnadu text on bus side */
-    .tn-bus .b-text {
-      position: absolute;
-      bottom: 18px; left: 50%;
-      transform: translateX(-50%);
-      font-family: 'Outfit', sans-serif;
-      font-size: 8.5px;
-      font-weight: 700;
-      color: #bfdbfe;
-      letter-spacing: 1.5px;
-      white-space: nowrap;
-      text-shadow: 0 0 6px rgba(59,130,246,0.5);
-    }
-    /* bus shadow on road */
-    .tn-bus .b-shadow {
-      position: absolute;
-      bottom: -24px; left: 10%;
-      width: 80%; height: 12px;
-      background: radial-gradient(ellipse, rgba(0,0,0,0.5), transparent);
-      filter: blur(6px);
+      height: auto;
+      filter: drop-shadow(0 20px 20px rgba(0,0,0,0.8));
     }
 
-    /* ── BUS 1 — enters from LEFT (front faces right) ───── */
-    #bus-left {
-      transform: scaleX(-1);   /* mirror so front is on right side */
-      left: -360px;
-      animation: busEnterLeft 2.2s cubic-bezier(0.16,1,0.3,1) forwards 0.4s;
+    /* ── BUS 1 — enters from LEFT ───── */
+    #bus-left-real {
+      width: 45%;
+      left: -60%;
+      animation: busEnterLeftReal 2.5s cubic-bezier(0.16,1,0.3,1) forwards 0.4s;
     }
-    @keyframes busEnterLeft {
-      0%   { left: -360px; }
-      100% { left: 4%; }
+    @keyframes busEnterLeftReal {
+      0%   { left: -60%; transform: scale(0.9); opacity: 0; }
+      100% { left: 2%; transform: scale(1); opacity: 1; }
     }
-    /* wheel speed for bus-left */
-    #bus-left .b-wheel { animation-duration: 0.45s; }
 
-    /* ── BUS 2 — enters from RIGHT (front faces left) ────── */
-    #bus-right {
-      right: -360px;
-      animation: busEnterRight 2.2s cubic-bezier(0.16,1,0.3,1) forwards 0.7s;
+    /* ── BUS 2 — enters from RIGHT ────── */
+    #bus-right-real {
+      width: 45%;
+      right: -60%;
+      animation: busEnterRightReal 2.5s cubic-bezier(0.16,1,0.3,1) forwards 0.7s;
     }
-    @keyframes busEnterRight {
-      0%   { right: -360px; }
-      100% { right: 4%; }
+    @keyframes busEnterRightReal {
+      0%   { right: -60%; transform: scale(0.9) scaleX(-1); opacity: 0; }
+      100% { right: 2%; transform: scale(1) scaleX(-1); opacity: 1; }
     }
-    #bus-right .b-wheel { animation-duration: 0.45s; }
 
-    /* ── BUS 3 — smaller, centre-back, fades in from far ── */
-    #bus-center {
+    /* ── BUS 3 — centre background fade ── */
+    #bus-center-real {
+      width: 30%;
       left: 50%;
-      transform: translateX(-50%) scaleX(-1);
-      bottom: 28%;
-      width: 200px;
-      height: 80px;
+      bottom: 25%;
+      transform: translateX(-50%) scale(0.8);
       opacity: 0;
-      animation: busCenterIn 1.2s ease forwards 2.4s;
       z-index: 15;
+      animation: busCenterInReal 2s ease forwards 1.2s;
     }
-    #bus-center .b-wheel { animation-duration: 0.6s; }
-    #bus-center .b-win { width: 18px; height: 18px; gap: 5px; }
-    #bus-center .b-led { width: 70px; font-size: 5.5px; }
-    @keyframes busCenterIn {
-      0%   { opacity: 0; transform: translateX(-50%) scaleX(-1) scale(0.5); }
-      100% { opacity: 0.6; transform: translateX(-50%) scaleX(-1) scale(1); }
-    }
-
-    /* ── HEADLIGHT BEAM RAYS on floor ───────────────────── */
-    .beam {
-      position: absolute;
-      bottom: 28%;
-      width: 180px; height: 30px;
-      background: linear-gradient(90deg, rgba(245,158,11,0.25), transparent);
-      clip-path: polygon(0 50%, 100% 0%, 100% 100%);
-      z-index: 18;
-      opacity: 0;
-      animation: beamFadeIn 0.6s ease forwards;
-    }
-    #beam-left  { left: 314px; transform: scaleX(-1); animation-delay: 2.4s; }
-    #beam-right { right: 314px;                       animation-delay: 2.4s; }
-    @keyframes beamFadeIn {
-      0%   { opacity: 0; }
-      100% { opacity: 1; }
+    @keyframes busCenterInReal {
+      0%   { opacity: 0; transform: translateX(-50%) scale(0.5); }
+      100% { opacity: 0.8; transform: translateX(-50%) scale(0.8); }
     }
 
     /* ── WELCOME TITLE BURST ────────────────────────────── */
@@ -363,157 +99,83 @@
       position: relative;
       z-index: 30;
       text-align: center;
-      margin-bottom: 10px;
+      margin-bottom: 50px;
     }
     .welcome-small {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
+      font-size: 0.9rem;
       letter-spacing: 8px;
-      color: rgba(16,185,129,0.7);
+      color: #fff;
       text-transform: uppercase;
       opacity: 0;
+      text-shadow: 0 0 10px rgba(0,0,0,0.8);
       animation: fadeSlideUp 0.6s ease forwards 2.5s;
       margin-bottom: 10px;
     }
     .welcome-big {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.5rem, 3.5vw, 2.6rem);
+      font-size: clamp(2rem, 5vw, 4rem);
       font-weight: 900;
       letter-spacing: 3px;
       line-height: 1.2;
-      background: linear-gradient(90deg,
-        #ffffff 0%,
-        #1565C0 25%,
-        #60a5fa 50%,
-        #10b981 75%,
-        #ffffff 100%);
-      background-size: 300% 100%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #ffffff;
+      text-shadow: 0 0 20px rgba(0,0,0,0.9), 0 0 40px rgba(21,101,192,0.8);
       opacity: 0;
-      animation: welcomeBurst 0.9s cubic-bezier(0.34,1.56,0.64,1) forwards 2.8s,
-                 titleShimmer 5s ease-in-out infinite 3.5s;
+      animation: welcomeBurst 0.9s cubic-bezier(0.34,1.56,0.64,1) forwards 2.8s;
     }
     .welcome-sub {
       font-family: 'Outfit', sans-serif;
-      font-size: 0.92rem;
-      color: rgba(96,165,250,0.75);
+      font-size: 1.1rem;
+      color: #bfdbfe;
+      text-shadow: 0 0 10px rgba(0,0,0,0.8);
       letter-spacing: 3px;
-      margin-top: 8px;
+      margin-top: 15px;
       opacity: 0;
-      animation: fadeSlideUp 0.6s ease forwards 3.4s;
+      animation: fadeSlideUp 0.6s ease forwards 3.1s;
     }
-    @keyframes welcomeBurst {
-      0%   { opacity: 0; transform: scale(0.6) translateY(20px); }
-      60%  { transform: scale(1.04) translateY(-4px); }
-      100% { opacity: 1; transform: scale(1) translateY(0); }
-    }
+
+    /* ── ANIMATIONS ─────────────────────────────────────── */
     @keyframes fadeSlideUp {
-      0%   { opacity: 0; transform: translateY(14px); }
+      0%   { opacity: 0; transform: translateY(20px); }
       100% { opacity: 1; transform: translateY(0); }
     }
-    @keyframes titleShimmer {
-      0%   { background-position: 0%   50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position: 0%   50%; }
+    @keyframes welcomeBurst {
+      0%   { opacity: 0; transform: scale(0.7) translateY(20px); filter: blur(10px); }
+      50%  { opacity: 1; transform: scale(1.05) translateY(-5px); filter: blur(0px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
     }
 
     /* ── ENTER BUTTON ───────────────────────────────────── */
     .enter-btn {
       position: relative;
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      padding: 15px 48px;
+      margin-top: 40px;
+      padding: 16px 40px;
+      background: linear-gradient(135deg, rgba(21,101,192,0.8), rgba(16,185,129,0.8));
+      border: 2px solid #60a5fa;
+      border-radius: 4px;
+      color: #fff;
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.9rem;
+      font-size: 1.1rem;
       font-weight: 700;
-      letter-spacing: 3px;
-      color: #ffffff;
-      background: linear-gradient(135deg, rgba(21,101,192,0.3), rgba(16,185,129,0.2));
-      border: 2px solid #1565C0;
-      border-radius: 8px;
+      letter-spacing: 2px;
       cursor: pointer;
       overflow: hidden;
-      transition: all 0.35s ease;
-      z-index: 30;
-      text-transform: uppercase;
+      box-shadow: 0 0 20px rgba(21,101,192,0.6);
+      transition: all 0.3s ease;
       opacity: 0;
-      animation: btnFadeIn 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards 4.0s;
-      margin-top: 28px;
-      box-shadow: 0 0 20px rgba(21,101,192,0.3);
+      animation: btnFadeIn 0.8s ease forwards 3.6s;
     }
-    .enter-btn::before {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      animation: btnSweep 2.5s linear infinite;
-    }
-    @keyframes btnSweep {
-      0%   { left: -100%; }
-      100% { left: 100%; }
+    .enter-btn:hover {
+      background: linear-gradient(135deg, rgba(21,101,192,1), rgba(16,185,129,1));
+      box-shadow: 0 0 40px rgba(21,101,192,0.8), 0 0 20px rgba(16,185,129,0.6);
+      transform: scale(1.05);
+      border-color: #10b981;
     }
     @keyframes btnFadeIn {
       0%   { opacity: 0; transform: translateY(18px) scale(0.9); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
     }
-    .enter-btn:hover {
-      background: linear-gradient(135deg, rgba(21,101,192,0.5), rgba(16,185,129,0.35));
-      box-shadow: 0 0 40px rgba(21,101,192,0.5), 0 0 20px rgba(16,185,129,0.2);
-      transform: scale(1.05);
-      border-color: #10b981;
-    }
 
-    /* ── CORNER SCAN LINES ──────────────────────────────── */
-    .corner-tl, .corner-tr, .corner-bl, .corner-br {
-      position: absolute;
-      width: 40px; height: 40px;
-      z-index: 31;
-      opacity: 0.5;
-    }
-    .corner-tl { top: 16px; left: 16px;
-      border-top: 2px solid #10b981; border-left: 2px solid #10b981; }
-    .corner-tr { top: 16px; right: 16px;
-      border-top: 2px solid #10b981; border-right: 2px solid #10b981; }
-    .corner-bl { bottom: 16px; left: 16px;
-      border-bottom: 2px solid #10b981; border-left: 2px solid #10b981; }
-    .corner-br { bottom: 16px; right: 16px;
-      border-bottom: 2px solid #10b981; border-right: 2px solid #10b981; }
-
-    /* ── FLOATING PARTICLES style ───────────────────────── */
-    .particles-container {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    /* ── DATA STREAMS ───────────────────────────────────── */
-    .data-stream {
-      position: absolute;
-      top: 0;
-      width: 14px;
-      height: 100%;
-      overflow: hidden;
-      opacity: 0.09;
-      pointer-events: none;
-      z-index: 1;
-    }
-    .data-stream-inner {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      line-height: 16px;
-      color: #1565C0;
-      animation: streamFall linear infinite;
-      white-space: nowrap;
-    }
-    @keyframes streamFall {
-      0%   { transform: translateY(-100%); }
-      100% { transform: translateY(100vh); }
-    }
   </style>
 </head>
 <body>
@@ -523,99 +185,22 @@
      =============================================== -->
 <div id="splash-screen">
 
-  <!-- Corner brackets -->
-  <div class="corner-tl"></div>
-  <div class="corner-tr"></div>
-  <div class="corner-bl"></div>
-  <div class="corner-br"></div>
-
   <!-- Background layers -->
   <div class="particles-container" id="particles-box"></div>
-  <div id="data-streams-box"></div>
-  <div class="grid-floor"><div class="grid-plane"></div></div>
-  <div class="road-layer">
-    <div class="road-surface"></div>
+
+  <!-- ─── BUS 1 : MTC (Left) ─────────────── -->
+  <div class="real-bus" id="bus-left-real">
+    <img src="/images/mtc_bus_real.png" alt="MTC Bus">
   </div>
 
-  <!-- Headlight beams on road -->
-  <div class="beam" id="beam-left"></div>
-  <div class="beam" id="beam-right"></div>
-
-  <!-- ─── BUS 1 : enters from LEFT ─────────────── -->
-  <div class="tn-bus" id="bus-left">
-    <div class="b-back"><div class="b-tail"></div></div>
-    <div class="b-body">
-      <div class="b-upper"></div>
-      <div class="b-wave"></div>
-      <div class="b-lower"></div>
-      <div class="b-stripe"></div>
-    </div>
-    <div class="b-led">TAMIL NADU</div>
-    <div class="b-windows">
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div>
-    </div>
-    <div class="b-text">TAMIL NADU GOVT TRANSPORT</div>
-    <div class="b-front">
-      <div class="b-front-headlight"></div>
-    </div>
-    <div class="b-wheels">
-      <div class="b-wheel"></div>
-      <div class="b-wheel"></div>
-    </div>
-    <div class="b-shadow"></div>
+  <!-- ─── BUS 2 : SETC (Right) ────────────── -->
+  <div class="real-bus" id="bus-right-real">
+    <img src="/images/setc_bus_real.png" alt="SETC Bus">
   </div>
 
-  <!-- ─── BUS 2 : enters from RIGHT ────────────── -->
-  <div class="tn-bus" id="bus-right">
-    <div class="b-back"><div class="b-tail"></div></div>
-    <div class="b-body">
-      <div class="b-upper"></div>
-      <div class="b-wave"></div>
-      <div class="b-lower"></div>
-      <div class="b-stripe"></div>
-    </div>
-    <div class="b-led">TAMIL NADU</div>
-    <div class="b-windows">
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div>
-    </div>
-    <div class="b-text">TAMIL NADU GOVT TRANSPORT</div>
-    <div class="b-front">
-      <div class="b-front-headlight"></div>
-    </div>
-    <div class="b-wheels">
-      <div class="b-wheel"></div>
-      <div class="b-wheel"></div>
-    </div>
-    <div class="b-shadow"></div>
-  </div>
-
-  <!-- ─── BUS 3 : smaller, centre-background ───── -->
-  <div class="tn-bus" id="bus-center">
-    <div class="b-back"></div>
-    <div class="b-body">
-      <div class="b-upper"></div>
-      <div class="b-wave"></div>
-      <div class="b-lower"></div>
-      <div class="b-stripe"></div>
-    </div>
-    <div class="b-led">TAMIL NADU</div>
-    <div class="b-windows">
-      <div class="b-win"></div><div class="b-win"></div>
-      <div class="b-win"></div><div class="b-win"></div>
-    </div>
-    <div class="b-front">
-      <div class="b-front-headlight"></div>
-    </div>
-    <div class="b-wheels">
-      <div class="b-wheel"></div>
-      <div class="b-wheel"></div>
-    </div>
+  <!-- ─── BUS 3 : TNSTC (Center Background) ── -->
+  <div class="real-bus" id="bus-center-real">
+    <img src="/images/tnstc_bus_real.png" alt="TNSTC Bus">
   </div>
 
   <!-- ─── CENTRE WELCOME TITLE ─────────────────── -->
@@ -632,9 +217,6 @@
 
 </div>
 
-<!-- ===============================================
-     MAIN APPLICATION (HIDDEN UNTIL SPLASH EXITS)
-     =============================================== -->
 <div id="app-root" style="display: none;">
   <!-- 1. LEFT VERTICAL NAVIGATION SIDEBAR (280px) -->
   <aside class="left-sidebar">
